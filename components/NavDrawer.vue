@@ -1,5 +1,4 @@
 <template>
-  <v-app>
   <v-navigation-drawer
     v-model="drawer"
     app
@@ -27,43 +26,12 @@
     </nuxt-link>
   </v-list>
   </v-navigation-drawer>
-    <v-app-bar
-      app
-      color="#00c58e"
-      dark
-    >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>SHIFT</v-toolbar-title>
-    </v-app-bar>
-
-    <v-content>
-      <v-container
-        class="fill-height"
-        fluid
-      >
-       <p>mypage</p>
-      </v-container>
-    </v-content>
-  <Footer />
-  </v-app>
 </template>
 
-<style scoped>
-.left-nav-a {
-  color : inherit;
-  text-decoration : none;
-}
-</style>
-
-
 <script>
-  import Footer from '~/components/Footer.vue'
   export default {
-    components: {
-      Footer,
-    },
     props: {
-      source: String,
+      drawer: Boolean,
     },
     data: () => ({
       drawer: null,

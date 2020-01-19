@@ -32,26 +32,31 @@
                 </v-card-subtitle>
                 <v-form
                   v-model="form"
+                  @submit.prevent="storeTrialData"
                 >
                   <v-text-field
+                    v-model="firstName"
                     label="姓"
                     name="firstName"
                     type="text"
                     :rules="[rules.required]"
                   />
                   <v-text-field
+                    v-model="lastName"
                     label="名"
                     name="lastName"
                     type="text"
                     :rules="[rules.required]"
                   />
                   <v-text-field
+                    v-model="companyName"
                     label="会社名"
                     name="companyName"
                     type="text"
                     :rules="[rules.required]"
                   />
                   <v-text-field
+                    v-model="email"
                     label="法人メールアドレス"
                     name="email"
                     type="email"
@@ -93,6 +98,7 @@
                   class="white--text"
                   color="#00c58e"
                   depressed
+                  @click="storeTrialData"
                 >無料で体験する
                 </v-btn>
               </v-card-actions>
@@ -178,38 +184,69 @@
 </template>
 
 <script>
-  export default {
+  import querystring from 'querystring'
+  const API_URL = 'http://127.0.0.1:3333/api/v1/trial'
 
+  export default {
     props: {
       source: String,
     },
-    data: () => ({
-      employeesNumberItems: ['~9名', '10~19名', '20~99名', '100~499名', '500~999名', '1000~4999名', '5000~9999名', '10000名~'],
-      employeesNumberValue: [],
-      requestItems: ['組織の生産性を上げたい', '組織の状況を知りたい', '離職者を減らしたい', '他の組織改善プラットフォームとの比較', '他の企業との比較', 'その他'],
-      requestValue: [],
-      agreement: false,
-      dialog: false,
-      email: undefined,
-      form: false,
-      isLoading: false,
+    data() {
+      return {
+        error: null,
+        employeesNumberItems: ['~9名', '10~19名', '20~99名', '100~499名', '500~999名', '1000~4999名', '5000~9999名', '10000名~'],
+        employeesNumberValue: [],
+        requestItems: ['組織の生産性を上げたい', '組織の状況を知りたい', '離職者を減らしたい', '他の組織改善プラットフォームとの比較', '他の企業との比較', 'その他'],
+        requestValue: [],
+        agreement: false,
+        dialog: false,
+        form: false,
+        isLoading: false,
+        firstName: '',
+        lastName: '',
+        companyName: '',
+        email: '',
 
-      rules: {
-        email: v => (v || '').match(/@/) || 'Emailアドレスが正しくありません',
-        required: v => !!v || 'この項目は必須です',
-      },
-    }),
+        rules: {
+          email: v => (v || '').match(/@/) ? true : 'Emailアドレスが正しくありません',
+          required: v => !!v || 'この項目は必須です',
+        }
+      }
+    },
     computed: {
       getEmployeesNumber() {
         let index = this.employeesNumberItems.indexOf(this.employeesNumberValue)
-        return index
+        return index+1
       },
       getRequest() {
-        let index = this.requestValue.map(v => {
-          return this.requestItems.indexOf(v)
+        let indexArr = []
+        this.requestValue.map(v => {
+          indexArr.push(this.requestItems.indexOf(v)+1)
         })
-        return index
+        return indexArr.sort((a, b) => {
+          return (a > b ? 1 : -1);
+        }).join(',')
       }
+    },
+    methods: {
+      async storeTrialData () {
+
+        const data = {
+          firstName: this.firstName,
+          lastName: this.lastName,
+          companyName: this.companyName,
+          email: this.email,
+          scaleType: this.getEmployeesNumber,
+          request: this.getRequest
+        }
+        this.isLoading = true
+        const response = await this.$axios
+          .$post(API_URL, querystring.stringify({ ...data }))
+          .catch(error => {
+            console.log('response error trial', error)
+          })
+        this.isLoading = false
+      } 
     }
   }
 </script>

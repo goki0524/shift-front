@@ -14,6 +14,12 @@
             sm="8"
             md="6"
           >
+            <v-alert v-if="postSccess" type="success">
+              無料トライアルに登録しました。担当者からの連絡をお待ちください。
+            </v-alert>
+            <v-alert v-if="postSccess == false" type="error">
+              無料トライアルに登録済みです。
+            </v-alert>
             <v-card>
               <v-toolbar
                 color="#00c58e"
@@ -194,6 +200,7 @@
     data() {
       return {
         error: null,
+        postSccess: null,
         employeesNumberItems: ['~9名', '10~19名', '20~99名', '100~499名', '500~999名', '1000~4999名', '5000~9999名', '10000名~'],
         employeesNumberValue: [],
         requestItems: ['組織の生産性を上げたい', '組織の状況を知りたい', '離職者を減らしたい', '他の組織改善プラットフォームとの比較', '他の企業との比較', 'その他'],
@@ -246,6 +253,15 @@
             console.log('response error trial', error)
           })
         this.isLoading = false
+
+        if (response.length > 0){
+          if (response[0].hasOwnProperty('message')) {
+            this.error = response[0].message
+            this.postSccess = false
+          }
+        } else {
+          this.postSccess = true
+        }
       } 
     }
   }

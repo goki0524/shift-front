@@ -34,6 +34,12 @@
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>SHIFT</v-toolbar-title>
+
+      <v-spacer></v-spacer>
+      <v-btn text @click="logout">
+        <!-- <v-icon>mdi-dots-vertical</v-icon> -->
+        ログアウト
+      </v-btn>
     </v-app-bar>
 
     <v-content>
@@ -57,8 +63,11 @@
 
 
 <script>
+  const Cookie = process.client ? require('js-cookie') : undefined
   import Footer from '~/components/Footer.vue'
+
   export default {
+    middleware: 'authenticated',
     components: {
       Footer,
     },
@@ -68,5 +77,12 @@
     data: () => ({
       drawer: null,
     }),
+    methods: {
+      logout () {
+        Cookie.remove('auth')
+        this.$store.commit('setAuth', null)
+        this.$router.push('/')
+      }
+    }
   }
 </script>

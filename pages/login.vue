@@ -109,21 +109,19 @@
             console.log('response error login', error)
           })
         this.isLoading = false
-        console.log(response)
         if (response[0] && response[0].hasOwnProperty('message')){
-          // if (response[0].hasOwnProperty('message')) {
-            this.error = response[0].message
-            this.loginSuccess = false
-            console.log(this.error)
-          // }
+          // login failed
+          this.error = response[0].message
+          this.loginSuccess = false
+          console.log(this.error)
         } else if (response) {
           // login success
           this.loginSuccess = true
-          this.$store.commit('setAccessToken', response.accessToken)
+          this.$store.commit('auth/setAccessToken', response.accessToken)
           Cookie.set('auth', response.accessToken)
-          // redirect('/mypage')
+          // debug
           console.log('login success')
-          console.log(this.$store.state.accessToken.token)
+          // debug
           this.$router.push('/mypage')
         }
       }

@@ -16,6 +16,16 @@
           </v-list-item-content>
         </v-list-item>
       </nuxt-link>
+      <nuxt-link to="/mypage/company" class="left-nav-a">
+        <v-list-item link>
+          <v-list-item-action>
+            <v-icon>mdi-city</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title class="left-nav-a-text">会社情報</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </nuxt-link>
       <nuxt-link to="/mypage/contact" class="left-nav-a">
         <v-list-item link>
           <v-list-item-action>
@@ -70,7 +80,7 @@
       },
       logout () {
         Cookie.remove('auth')
-        this.$store.commit('setAccessToken', null)
+        this.$store.commit('auth/setAccessToken', null)
         this.$router.push('/')
       }
     }

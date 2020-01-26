@@ -1,0 +1,6 @@
+{
+  "recruitmentType": [
+    {"id": 1, "name": "新卒"},
+    {"id": 2, "name": "中途"}
+  ]
+}

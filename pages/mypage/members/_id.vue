@@ -24,14 +24,14 @@
 
                 <header class="input-lable">名前</header>
                 <v-text-field
-                  v-model="firstName"
+                  v-model="member.firstName"
                   :rules="[rules.required]"
                   placeholder="姓"
                   required
                 ></v-text-field>
 
                 <v-text-field
-                  v-model="lastName"
+                  v-model="member.lastName"
                   :rules="[rules.required]"
                   placeholder="名"
                   required
@@ -39,29 +39,27 @@
 
                 <header class="input-lable">ID</header>
                 <v-text-field
-                  v-model="customId"
+                  v-model="member.customId"
                   type="number"
                 ></v-text-field>
 
                 <header class="input-lable">メールアドレス</header>
                 <v-text-field
-                  v-model="email"
+                  v-model="member.email"
                   :rules="[rules.email]"
                   placeholder="email@example.com"
                   required
                 ></v-text-field>
 
                 <header class="input-lable">性別</header>
-                <v-radio-group v-model="gender" row>
+                {{member.gender}}
+                <v-radio-group v-model="member.gender" row>
                   <v-radio
-                    label="男性"
-                    color="primary"
-                    value="1"
-                  ></v-radio>
-                  <v-radio
-                    label="女性"
-                    color="red"
-                    value="2"
+                    v-for="n in 2"
+                    :key="n"
+                    :value="n"
+                    :label="genderText[n-1]"
+                    :color="genderColor[n-1]"
                   ></v-radio>
                 </v-radio-group>
 
@@ -80,37 +78,37 @@
                 ></v-select>
 
                 <header class="input-lable">職種</header>
-                {{getJobCategoryId}} | {{jobCategoryName}}
+                {{getJobCategoryId}} | {{member.jobCategoryName}}
                 <v-select
-                  v-model="jobCategoryName"
+                  v-model="member.jobCategoryName"
                   :items="getJobCategoryNames"
                 ></v-select>
 
                 <header class="input-lable">役職</header>
-                {{getPositionId}} | {{positionName}}
+                {{getPositionId}} | {{member.positionName}}
                 <v-select
-                  v-model="positionName"
+                  v-model="member.positionName"
                   :items="getPositionNames"
                 ></v-select>
 
                 <header class="input-lable">雇用区分</header>
-                {{getEmploymentType}} | {{employmentTypeName}}
+                {{getEmploymentType}} | {{member.employmentTypeName}}
                 <v-select
-                  v-model="employmentTypeName"
+                  v-model="member.employmentTypeName"
                   :items="getEmploymentTypeNames"
                 ></v-select>
 
                 <header class="input-lable">新卒/中途</header>
-                {{getRecruitmentType}} | {{recruitmentTypeName}}
+                {{getRecruitmentType}} | {{member.recruitmentTypeName}}
                 <v-select
-                  v-model="recruitmentTypeName"
+                  v-model="member.recruitmentTypeName"
                   :items="getRecruitmentTypeNames"
                 ></v-select>
 
                 <header class="input-lable">メモ</header>
-                {{memo}}
+                {{member.memo}}
                 <v-textarea
-                  v-model="memo"
+                  v-model="member.memo"
                   counter
                 ></v-textarea>
               </v-card-text>
@@ -121,9 +119,9 @@
                   color="#00c58e"
                   class="post-btn"
                   :loading="isLoading"
-                  @click="storeMember"
+                  @click="updateMember"
                 >
-                  追加する
+                  更新する
                 </v-btn>
               </v-card-actions>
 
@@ -173,20 +171,15 @@
         postSuccess:null,
         error: null,
 
-        firstName: '',
-        lastName: '',
-        customId: null,
-        email: '',
-        gender: null,
-        jobCategoryName: '',
-        positionName: '',
-        employmentTypeName: '',
-        recruitmentTypeName: '',
+
+        genderText: ['男性', '女性'],
+        genderColor: ['blue', 'red'],
+
         year: null,
         month: null,
         date: null,
         birthday: null,
-        memo: '',
+
         rules: {
           email: v => (v || '').match(/@/) ? true : 'Emailアドレスが正しくありません',
           required: v => !!v || 'この項目は必須です',
@@ -194,6 +187,7 @@
       }
     },
     computed: {
+    
       getYearItems() {
         const start = 1920
         const end = 2020
@@ -213,7 +207,7 @@
         return jobCategoryNames
       },
       getJobCategoryId() {
-        const jobCategoryId = this.getMemberMappingData(jobCategoryJson, 'jobCategoryJson', 'name', this.jobCategoryName)
+        const jobCategoryId = this.getMemberMappingData(jobCategoryJson, 'jobCategoryJson', 'name', this.member.jobCategoryName)
         return jobCategoryId
       },
       getPositionNames() {
@@ -223,7 +217,7 @@
         return positionNames
       },
       getPositionId() {
-        const positionId = this.getMemberMappingData(positionIdJson, 'positionIdJson', 'name', this.positionName)
+        const positionId = this.getMemberMappingData(positionIdJson, 'positionIdJson', 'name', this.member.positionName)
         return positionId
       },
       getEmploymentTypeNames() {
@@ -233,7 +227,7 @@
         return employmentTypeNames
       },
       getEmploymentType() {
-        const employmentType = this.getMemberMappingData(employmentTypeJson, 'employmentTypeJson', 'name', this.employmentTypeName)
+        const employmentType = this.getMemberMappingData(employmentTypeJson, 'employmentTypeJson', 'name', this.member.employmentTypeName)
         return employmentType
       },
       getRecruitmentTypeNames() {
@@ -243,7 +237,7 @@
         return recruitmentTypeNames
       },
       getRecruitmentType() {
-        const recruitmentType = this.getMemberMappingData(recruitmentTypeJson, 'recruitmentTypeJson', 'name', this.recruitmentTypeName)
+        const recruitmentType = this.getMemberMappingData(recruitmentTypeJson, 'recruitmentTypeJson', 'name', this.member.recruitmentTypeName)
         return recruitmentType
       },
       getBirthday() {
@@ -338,20 +332,20 @@
         }
       },
 
-      async storeMember() {
+      async updateMember() {
 
         const data = {
-          customId: this.customId,
+          customId: this.member.customId,
           jobCategoryId: this.getJobCategoryId,
           positionId: this.getPositionId,
           employmentType: this.getEmploymentType,
           recruitmentType: this.getRecruitmentType,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          email: this.email,
-          gender: this.gender,
+          firstName: this.member.firstName,
+          lastName: this.member.lastName,
+          email: this.member.email,
+          gender: this.member.gender,
           birthday: this.getBirthday,
-          memo: this.memo,
+          memo: this.member.memo,
         }
 
         this.isLoading = true
@@ -383,23 +377,23 @@
 
     },
 
-    // async asyncData({ $axios, query, store }) {
-    //   const accessToken = store.getters['auth/accessToken']
-    //   const token = accessToken.token
-    //   const response = await $axios
-    //   .$get(API_URL, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   .catch(error => {
-    //     console.log('response error: ', error)
-    //     return false
-    //   })
-    //   console.log(response)
-    //   return {
-    //     company: response
-    //   }
-    // }
+    async asyncData({ $axios, query, store }) {
+      const accessToken = store.getters['auth/accessToken']
+      const token = accessToken.token
+      const response = await $axios
+      .$get(`${API_URL}/3`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .catch(error => {
+        console.log('response error: ', error)
+        return false
+      })
+      console.log(response)
+      return {
+        member: response[0]
+      }
+    }
   }
 </script>

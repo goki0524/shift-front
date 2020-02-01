@@ -168,7 +168,7 @@
     },
     data() {
       return {
-        drawer: false,
+        drawer: true,
         isLoading: false,
         postSuccess:null,
         error: null,
@@ -370,7 +370,7 @@
         this.isLoading = false
         console.log(response)
 
-        if (response.length > 0){
+        if (response && response.length > 0){
           if (response[0].hasOwnProperty('message')) {
             this.error = response[0].message
             this.postSuccess = false

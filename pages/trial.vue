@@ -253,7 +253,7 @@
           })
         this.isLoading = false
 
-        if (response.length > 0){
+        if (response && response.length > 0){
           if (response[0].hasOwnProperty('message')) {
             this.error = response[0].message
             this.postSuccess = false

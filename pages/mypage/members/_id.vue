@@ -10,12 +10,33 @@
       >
         <v-row justify="center">
           <v-col cols="12" sm="10" md="8" lg="6">
-            <v-alert v-if="postSuccess" type="success">
-              メンバーを追加しました。
-            </v-alert>
-            <v-alert v-if="postSuccess == false" type="error">
-              メンバーの追加に失敗しました。{{error}}
-            </v-alert>
+            <v-snackbar
+              v-model="postSuccess"
+              :timeout="timeoutPostSuccess"
+              :color="postSuccessColor"
+            >
+              <span style="color:black;">メンバーを更新しました。</span>
+              <v-btn
+                text
+                :color="snackbarsBtnColor"
+              >
+                閉じる
+              </v-btn>
+            </v-snackbar>
+            <v-snackbar
+              v-model="postFailure"
+              :timeout="timeoutPostFailure"
+              :color="postFailureColor"
+            >
+              メンバーの更新に失敗しました。 {{error}}
+              <v-btn
+                dark
+                text
+              >
+                閉じる
+              </v-btn>
+            </v-snackbar>
+
             <v-card ref="form">
               <v-toolbar flat>
                 <v-toolbar-title class="title">データを入力してメンバーを登録してください</v-toolbar-title>
@@ -65,15 +86,15 @@
 
                 <header class="input-lable">生年月日</header>
                 <v-select
-                  v-model="year"
+                  v-model="member.birthdayObj.year"
                   :items="getYearItems"
                 ></v-select>
                 <v-select
-                  v-model="month"
+                  v-model="member.birthdayObj.month"
                   :items="getMonthItems"
                 ></v-select>
                 <v-select
-                  v-model="date"
+                  v-model="member.birthdayObj.date"
                   :items="getDateItems"
                 ></v-select>
 
@@ -148,7 +169,6 @@
 </style>
 
 <script>
-  // import { mapGetters } from 'vuex'
   const API_URL = 'http://127.0.0.1:3333/api/v1/company/members'
   import querystring from 'querystring'
   import NavDrawer from '~/components/NavDrawer.vue'
@@ -166,19 +186,19 @@
     },
     data() {
       return {
-        drawer: false,
+        drawer: true,
         isLoading: false,
-        postSuccess:null,
         error: null,
-
+        postSuccess:null,
+        timeoutPostSuccess: 1500,
+        postSuccessColor: 'white',
+        postFailure:null,
+        postFailureColor: 'error',
+        timeoutPostFailure: 6000,
+        snackbarsBtnColor: '#00C58E',
 
         genderText: ['男性', '女性'],
         genderColor: ['blue', 'red'],
-
-        year: null,
-        month: null,
-        date: null,
-        birthday: null,
 
         rules: {
           email: v => (v || '').match(/@/) ? true : 'Emailアドレスが正しくありません',
@@ -241,9 +261,9 @@
         return recruitmentType
       },
       getBirthday() {
-        const birthday = `${this.year}-${this.month}-${this.date}`
+        const birthday = `${this.member.birthdayObj.year}-${this.member.birthdayObj.month}-${this.member.birthdayObj.date}`
         return birthday
-      }
+      },
     },
     methods: {
      getMemberMappingData (model, modelName, key, val) {
@@ -331,7 +351,6 @@
           }
         }
       },
-
       async updateMember() {
 
         const data = {
@@ -351,8 +370,9 @@
         this.isLoading = true
         const accessToken = this.$store.getters['auth/accessToken']
         const token = accessToken.token
+        const memberId = this.$route.params.id
         const response = await this.$axios
-          .$post(API_URL, querystring.stringify({ ...data }),
+          .$put(`${API_URL}/${memberId}`, querystring.stringify({ ...data }),
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -367,7 +387,7 @@
         if (response.length > 0){
           if (response[0].hasOwnProperty('message')) {
             this.error = response[0].message
-            this.postSuccess = false
+            this.postFailure = true
             console.log(this.error)
           }
         } else {
@@ -377,11 +397,13 @@
 
     },
 
-    async asyncData({ $axios, query, store }) {
+    async asyncData({ $axios, query, store, params }) {
       const accessToken = store.getters['auth/accessToken']
       const token = accessToken.token
+      const memberId = params.id
+      
       const response = await $axios
-      .$get(`${API_URL}/3`, {
+      .$get(`${API_URL}/${memberId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

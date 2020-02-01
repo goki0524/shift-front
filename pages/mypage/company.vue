@@ -75,7 +75,7 @@
     },
     data() {
       return {
-        drawer: false,
+        drawer: true,
       }
     },
     async asyncData({ $axios, query, store }) {

@@ -392,6 +392,7 @@
           }
         } else {
           this.postSuccess = true
+          this.$router.push('/mypage/members')
         }
       }
 

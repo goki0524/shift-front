@@ -80,31 +80,48 @@
                 ></v-select>
 
                 <header class="input-lable">職種</header>
-                {{getJobCategoryId}} | {{jobCategoryName}}
+                {{jobCategoryId}}
                 <v-select
-                  v-model="jobCategoryName"
-                  :items="getJobCategoryNames"
+                  v-model="jobCategoryId"
+                  :items="jobCategoryItems"
+                  item-value="id"
+                  item-text="name"
                 ></v-select>
 
                 <header class="input-lable">役職</header>
-                {{getPositionId}} | {{positionName}}
+                {{positionId}}
                 <v-select
-                  v-model="positionName"
-                  :items="getPositionNames"
+                  v-model="positionId"
+                  :items="positionItems"
+                  item-value="id"
+                  item-text="name"
                 ></v-select>
 
                 <header class="input-lable">雇用区分</header>
-                {{getEmploymentType}} | {{employmentTypeName}}
+                {{employmentType}}
                 <v-select
-                  v-model="employmentTypeName"
-                  :items="getEmploymentTypeNames"
+                  v-model="employmentType"
+                  :items="employeeTypeItems"
+                  item-value="id"
+                  item-text="name"
                 ></v-select>
 
                 <header class="input-lable">新卒/中途</header>
-                {{getRecruitmentType}} | {{recruitmentTypeName}}
+                {{recruitmentType}}
                 <v-select
-                  v-model="recruitmentTypeName"
-                  :items="getRecruitmentTypeNames"
+                  v-model="recruitmentType"
+                  :items="recruitmentTypeItems"
+                  item-value="id"
+                  item-text="name"
+                ></v-select>
+
+                <header class="input-lable">所属グループ</header>
+                {{groups}}
+                <v-select
+                  v-model="groups"
+                  :items="groupsItems"
+                  item-value="id"
+                  item-text="groupName"
                 ></v-select>
 
                 <header class="input-lable">メモ</header>
@@ -113,6 +130,20 @@
                   v-model="memo"
                   counter
                 ></v-textarea>
+
+                <header class="input-lable">配信</header>
+                <v-radio-group v-model="isDelivery" row>
+                  <v-radio
+                    label="配信する"
+                    color="primary"
+                    value="true"
+                  ></v-radio>
+                  <v-radio
+                    label="配信しない"
+                    color="red"
+                    value="false"
+                  ></v-radio>
+                </v-radio-group>
               </v-card-text>
 
               <v-card-actions>
@@ -151,14 +182,10 @@
 
 <script>
   // import { mapGetters } from 'vuex'
-  const API_URL = 'http://127.0.0.1:3333/api/v1/company/members'
+  const API_URL = 'http://127.0.0.1:3333/api/v1/company/members/new'
   import querystring from 'querystring'
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'
-  import jobCategoryJson from '~/utils/member/jobCategoryId.json'
-  import positionIdJson from '~/utils/member/positionId.json'
-  import employmentTypeJson from '~/utils/member/employmentType.json'
-  import recruitmentTypeJson from '~/utils/member/recruitmentType.json'
 
   export default {
     middleware: 'authenticated',
@@ -172,21 +199,23 @@
         isLoading: false,
         postSuccess:null,
         error: null,
-
+        // user input data
         firstName: '',
         lastName: '',
         customId: null,
         email: '',
         gender: null,
-        jobCategoryName: '',
-        positionName: '',
-        employmentTypeName: '',
-        recruitmentTypeName: '',
+        groups: null,
+        employmentType: null,
+        jobCategoryId: null,
+        positionId: null,
+        recruitmentType: null,
         year: null,
         month: null,
         date: null,
         birthday: null,
         memo: '',
+        isDelivery: null,
         rules: {
           email: v => (v || '').match(/@/) ? true : 'Emailアドレスが正しくありません',
           required: v => !!v || 'この項目は必須です',
@@ -195,8 +224,9 @@
     },
     computed: {
       getYearItems() {
-        const start = 1920
-        const end = 2020
+        const nowYear = new Date().getFullYear()
+        const start = nowYear - 100
+        const end = nowYear
         const yearItems = Array(end - start + 1).fill(null).map((_, i) => i + start)
         return yearItems
       },
@@ -206,201 +236,80 @@
       getDateItems() {
         return [...Array(31).keys()].map(i => ++i)
       },
-      getJobCategoryNames() {
-        const jobCategoryNames = jobCategoryJson.jobCategoryId.map(i => {
-          return i['name']
-        })
-        return jobCategoryNames
-      },
-      getJobCategoryId() {
-        const jobCategoryId = this.getMemberMappingData(jobCategoryJson, 'jobCategoryJson', 'name', this.jobCategoryName)
-        return jobCategoryId
-      },
-      getPositionNames() {
-        const positionNames = positionIdJson.positionId.map(i => {
-          return i['name']
-        })
-        return positionNames
-      },
-      getPositionId() {
-        const positionId = this.getMemberMappingData(positionIdJson, 'positionIdJson', 'name', this.positionName)
-        return positionId
-      },
-      getEmploymentTypeNames() {
-        const employmentTypeNames = employmentTypeJson.employmentType.map(i => {
-          return i['name']
-        })
-        return employmentTypeNames
-      },
-      getEmploymentType() {
-        const employmentType = this.getMemberMappingData(employmentTypeJson, 'employmentTypeJson', 'name', this.employmentTypeName)
-        return employmentType
-      },
-      getRecruitmentTypeNames() {
-        const recruitmentTypeNames = recruitmentTypeJson.recruitmentType.map(i => {
-          return i['name']
-        })
-        return recruitmentTypeNames
-      },
-      getRecruitmentType() {
-        const recruitmentType = this.getMemberMappingData(recruitmentTypeJson, 'recruitmentTypeJson', 'name', this.recruitmentTypeName)
-        return recruitmentType
-      },
       getBirthday() {
         const birthday = `${this.year}-${this.month}-${this.date}`
         return birthday
       }
     },
     methods: {
-     getMemberMappingData (model, modelName, key, val) {
-        if (key === 'id') {
-          switch (modelName) {
-            case 'jobCategoryJson':
-              let targetArr1 = model.jobCategoryId.filter((obj) => {
-                return obj.id === val
-              })
-              let targetObj1 = targetArr1.shift()
-              if (typeof targetObj1 === 'object') {
-                return targetObj1.hasOwnProperty('name') ? targetObj1.id : null
-              }
-              break
-            case 'employmentTypeJson':
-              let targetArr2 = model.employmentType.filter((obj) => {
-                return obj.id === val
-              })
-              let targetObj2 = targetArr2.shift()
-              if (typeof targetObj2 === 'object') {
-                return targetObj2.hasOwnProperty('name') ? targetObj2.id : null
-              }
-              break
-            case 'positionIdJson':
-              let targetArr3 = model.positionId.filter((obj) => {
-                return obj.id === val
-              })
-              let targetObj3 = targetArr3.shift()
-              if (typeof targetObj3 === 'object') {
-                return targetObj3.hasOwnProperty('name') ? targetObj3.id : null
-              }
-              break
-            case 'recruitmentTypeJson':
-              let targetArr4 = model.recruitmentType.filter((obj) => {
-                return obj.id === val
-              })
-              let targetObj4 = targetArr4.shift()
-              if (typeof targetObj4 === 'object') {
-                return targetObj4.hasOwnProperty('name') ? targetObj4.id : null
-              }
-              break
-            default:
-              return null
-          }
-        } else if (key === 'name') {
-          switch (modelName) {
-            case 'jobCategoryJson':
-              let targetArr1 = model.jobCategoryId.filter((obj) => {
-                return obj.name === val
-              })
-              let targetObj1 = targetArr1.shift()
-              if (typeof targetObj1 === 'object') {
-                return targetObj1.hasOwnProperty('id') ? targetObj1.id : null
-              }
-              break
-            case 'employmentTypeJson':
-              let targetArr2 = model.employmentType.filter((obj) => {
-                return obj.name === val
-              })
-              let targetObj2 = targetArr2.shift()
-              if (typeof targetObj2 === 'object') {
-                return targetObj2.hasOwnProperty('id') ? targetObj2.id : null
-              }
-              break
-            case 'positionIdJson':
-              let targetArr3 = model.positionId.filter((obj) => {
-                return obj.name === val
-              })
-              let targetObj3 = targetArr3.shift()
-              if (typeof targetObj3 === 'object') {
-                return targetObj3.hasOwnProperty('id') ? targetObj3.id : null
-              }
-              break
-            case 'recruitmentTypeJson':
-              let targetArr4 = model.recruitmentType.filter((obj) => {
-                return obj.name === val
-              })
-              let targetObj4 = targetArr4.shift()
-              if (typeof targetObj4 === 'object') {
-                return targetObj4.hasOwnProperty('id') ? targetObj4.id : null
-              }
-              break
-            default:
-              return null
-          }
-        }
-      },
+    
+    async storeMember() {
 
-      async storeMember() {
-
-        const data = {
-          customId: this.customId,
-          jobCategoryId: this.getJobCategoryId,
-          positionId: this.getPositionId,
-          employmentType: this.getEmploymentType,
-          recruitmentType: this.getRecruitmentType,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          email: this.email,
-          gender: this.gender,
-          birthday: this.getBirthday,
-          memo: this.memo,
-        }
-
-        this.isLoading = true
-        const accessToken = this.$store.getters['auth/accessToken']
-        const token = accessToken.token
-        const response = await this.$axios
-          .$post(API_URL, querystring.stringify({ ...data }),
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            }
-          })
-          .catch(error => {
-            console.log('response error trial', error)
-          })
-        this.isLoading = false
-        console.log(response)
-
-        if (response && response.length > 0){
-          if (response[0].hasOwnProperty('message')) {
-            this.error = response[0].message
-            this.postSuccess = false
-            console.log(this.error)
-          }
-        } else {
-          this.postSuccess = true
-          this.$router.push('/mypage/members')
-        }
+      const data = {
+        customId: this.customId,
+        jobCategoryId: this.jobCategoryId,
+        positionId: this.positionId,
+        employmentType: this.employmentType,
+        recruitmentType: this.recruitmentType,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        email: this.email,
+        gender: this.gender,
+        birthday: this.getBirthday,
+        memo: this.memo,
       }
 
-    },
+      this.isLoading = true
+      const accessToken = this.$store.getters['auth/accessToken']
+      const token = accessToken.token
+      const response = await this.$axios
+        .$post(API_URL, querystring.stringify({ ...data }),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        })
+        .catch(error => {
+          console.log('response error member new', error)
+        })
+      this.isLoading = false
+      console.log(response)
 
-    // async asyncData({ $axios, query, store }) {
-    //   const accessToken = store.getters['auth/accessToken']
-    //   const token = accessToken.token
-    //   const response = await $axios
-    //   .$get(API_URL, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   .catch(error => {
-    //     console.log('response error: ', error)
-    //     return false
-    //   })
-    //   console.log(response)
-    //   return {
-    //     company: response
-    //   }
-    // }
+      if (response && response.length > 0){
+        if (response[0].hasOwnProperty('message')) {
+          this.error = response[0].message
+          this.postSuccess = false
+          console.log(this.error)
+        }
+      } else {
+        this.postSuccess = true
+        this.$router.push('/mypage/members')
+      }
+    }
+
+  },
+
+    async asyncData({ $axios, query, store }) {
+      const accessToken = store.getters['auth/accessToken']
+      const token = accessToken.token
+      const response = await $axios
+      .$get(API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .catch(error => {
+        console.log('response error: ', error)
+        return false
+      })
+      console.log(response.groups)
+      return {
+        groupsItems: response.groups,
+        employeeTypeItems: response.employeeType,
+        jobCategoryItems: response.jobCategory,
+        positionItems: response.position,
+        recruitmentTypeItems: response.recruitmentType
+      }
+    }
   }
 </script>

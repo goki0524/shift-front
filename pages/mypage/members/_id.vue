@@ -99,32 +99,50 @@
                 ></v-select>
 
                 <header class="input-lable">職種</header>
-                {{getJobCategoryId}} | {{member.jobCategoryName}}
+                {{jobCategoryId}}
                 <v-select
-                  v-model="member.jobCategoryName"
-                  :items="getJobCategoryNames"
+                  v-model="member.jobCategoryId"
+                  :items="groupsItems"
+                  item-value="id"
+                  item-text="name"
                 ></v-select>
 
                 <header class="input-lable">役職</header>
-                {{getPositionId}} | {{member.positionName}}
+                {{positionId}}
                 <v-select
-                  v-model="member.positionName"
-                  :items="getPositionNames"
+                  v-model="member.positionId"
+                  :items="positionItems"
+                  item-value="id"
+                  item-text="name"
                 ></v-select>
 
                 <header class="input-lable">雇用区分</header>
-                {{getEmploymentType}} | {{member.employmentTypeName}}
+                {{employmentType}}
                 <v-select
-                  v-model="member.employmentTypeName"
-                  :items="getEmploymentTypeNames"
+                  v-model="member.employmentType"
+                  :items="employeeTypeItems"
+                  item-value="id"
+                  item-text="name"
                 ></v-select>
 
                 <header class="input-lable">新卒/中途</header>
-                {{getRecruitmentType}} | {{member.recruitmentTypeName}}
+                {{recruitmentType}}
                 <v-select
-                  v-model="member.recruitmentTypeName"
-                  :items="getRecruitmentTypeNames"
+                  v-model="member.recruitmentType"
+                  :items="recruitmentTypeItems"
+                  item-value="id"
+                  item-text="name"
                 ></v-select>
+
+                <header class="input-lable">所属グループ</header>
+                {{groups}}
+                <v-select
+                  v-model="member.groups"
+                  :items="groupsItems"
+                  item-value="id"
+                  item-text="groupName"
+                ></v-select>
+
 
                 <header class="input-lable">メモ</header>
                 {{member.memo}}
@@ -132,6 +150,21 @@
                   v-model="member.memo"
                   counter
                 ></v-textarea>
+
+                <header class="input-lable">配信</header>
+                <v-radio-group v-model="member.isDelivery" row>
+                  <v-radio
+                    label="配信する"
+                    color="primary"
+                    value="true"
+                  ></v-radio>
+                  <v-radio
+                    label="配信しない"
+                    color="red"
+                    value="false"
+                  ></v-radio>
+                </v-radio-group>
+
               </v-card-text>
 
               <v-card-actions>
@@ -173,10 +206,6 @@
   import querystring from 'querystring'
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'
-  import jobCategoryJson from '~/utils/member/jobCategoryId.json'
-  import positionIdJson from '~/utils/member/positionId.json'
-  import employmentTypeJson from '~/utils/member/employmentType.json'
-  import recruitmentTypeJson from '~/utils/member/recruitmentType.json'
 
   export default {
     middleware: 'authenticated',
@@ -209,8 +238,9 @@
     computed: {
     
       getYearItems() {
-        const start = 1920
-        const end = 2020
+        const nowYear = new Date().getFullYear()
+        const start = nowYear - 100
+        const end = nowYear
         const yearItems = Array(end - start + 1).fill(null).map((_, i) => i + start)
         return yearItems
       },
@@ -220,145 +250,21 @@
       getDateItems() {
         return [...Array(31).keys()].map(i => ++i)
       },
-      getJobCategoryNames() {
-        const jobCategoryNames = jobCategoryJson.jobCategoryId.map(i => {
-          return i['name']
-        })
-        return jobCategoryNames
-      },
-      getJobCategoryId() {
-        const jobCategoryId = this.getMemberMappingData(jobCategoryJson, 'jobCategoryJson', 'name', this.member.jobCategoryName)
-        return jobCategoryId
-      },
-      getPositionNames() {
-        const positionNames = positionIdJson.positionId.map(i => {
-          return i['name']
-        })
-        return positionNames
-      },
-      getPositionId() {
-        const positionId = this.getMemberMappingData(positionIdJson, 'positionIdJson', 'name', this.member.positionName)
-        return positionId
-      },
-      getEmploymentTypeNames() {
-        const employmentTypeNames = employmentTypeJson.employmentType.map(i => {
-          return i['name']
-        })
-        return employmentTypeNames
-      },
-      getEmploymentType() {
-        const employmentType = this.getMemberMappingData(employmentTypeJson, 'employmentTypeJson', 'name', this.member.employmentTypeName)
-        return employmentType
-      },
-      getRecruitmentTypeNames() {
-        const recruitmentTypeNames = recruitmentTypeJson.recruitmentType.map(i => {
-          return i['name']
-        })
-        return recruitmentTypeNames
-      },
-      getRecruitmentType() {
-        const recruitmentType = this.getMemberMappingData(recruitmentTypeJson, 'recruitmentTypeJson', 'name', this.member.recruitmentTypeName)
-        return recruitmentType
-      },
       getBirthday() {
         const birthday = `${this.member.birthdayObj.year}-${this.member.birthdayObj.month}-${this.member.birthdayObj.date}`
         return birthday
       },
     },
     methods: {
-     getMemberMappingData (model, modelName, key, val) {
-        if (key === 'id') {
-          switch (modelName) {
-            case 'jobCategoryJson':
-              let targetArr1 = model.jobCategoryId.filter((obj) => {
-                return obj.id === val
-              })
-              let targetObj1 = targetArr1.shift()
-              if (typeof targetObj1 === 'object') {
-                return targetObj1.hasOwnProperty('name') ? targetObj1.id : null
-              }
-              break
-            case 'employmentTypeJson':
-              let targetArr2 = model.employmentType.filter((obj) => {
-                return obj.id === val
-              })
-              let targetObj2 = targetArr2.shift()
-              if (typeof targetObj2 === 'object') {
-                return targetObj2.hasOwnProperty('name') ? targetObj2.id : null
-              }
-              break
-            case 'positionIdJson':
-              let targetArr3 = model.positionId.filter((obj) => {
-                return obj.id === val
-              })
-              let targetObj3 = targetArr3.shift()
-              if (typeof targetObj3 === 'object') {
-                return targetObj3.hasOwnProperty('name') ? targetObj3.id : null
-              }
-              break
-            case 'recruitmentTypeJson':
-              let targetArr4 = model.recruitmentType.filter((obj) => {
-                return obj.id === val
-              })
-              let targetObj4 = targetArr4.shift()
-              if (typeof targetObj4 === 'object') {
-                return targetObj4.hasOwnProperty('name') ? targetObj4.id : null
-              }
-              break
-            default:
-              return null
-          }
-        } else if (key === 'name') {
-          switch (modelName) {
-            case 'jobCategoryJson':
-              let targetArr1 = model.jobCategoryId.filter((obj) => {
-                return obj.name === val
-              })
-              let targetObj1 = targetArr1.shift()
-              if (typeof targetObj1 === 'object') {
-                return targetObj1.hasOwnProperty('id') ? targetObj1.id : null
-              }
-              break
-            case 'employmentTypeJson':
-              let targetArr2 = model.employmentType.filter((obj) => {
-                return obj.name === val
-              })
-              let targetObj2 = targetArr2.shift()
-              if (typeof targetObj2 === 'object') {
-                return targetObj2.hasOwnProperty('id') ? targetObj2.id : null
-              }
-              break
-            case 'positionIdJson':
-              let targetArr3 = model.positionId.filter((obj) => {
-                return obj.name === val
-              })
-              let targetObj3 = targetArr3.shift()
-              if (typeof targetObj3 === 'object') {
-                return targetObj3.hasOwnProperty('id') ? targetObj3.id : null
-              }
-              break
-            case 'recruitmentTypeJson':
-              let targetArr4 = model.recruitmentType.filter((obj) => {
-                return obj.name === val
-              })
-              let targetObj4 = targetArr4.shift()
-              if (typeof targetObj4 === 'object') {
-                return targetObj4.hasOwnProperty('id') ? targetObj4.id : null
-              }
-              break
-            default:
-              return null
-          }
-        }
-      },
+
       async updateMember() {
 
         const data = {
           customId: this.member.customId,
-          jobCategoryId: this.getJobCategoryId,
-          positionId: this.getPositionId,
-          employmentType: this.getEmploymentType,
-          recruitmentType: this.getRecruitmentType,
+          jobCategoryId: this.member.jobCategoryId,
+          positionId: this.member.positionId,
+          employmentType: this.member.employmentType,
+          recruitmentType: this.member.recruitmentType,
           firstName: this.member.firstName,
           lastName: this.member.lastName,
           email: this.member.email,
@@ -403,7 +309,7 @@
       const token = accessToken.token
       const memberId = params.id
       
-      const response = await $axios
+      const memberData = await $axios
       .$get(`${API_URL}/${memberId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -413,9 +319,27 @@
         console.log('response error: ', error)
         return false
       })
-      console.log(response)
+      console.log(memberData)
+
+      const formData = await $axios
+      .$get(`${API_URL}/new`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .catch(error => {
+        console.log('response error: ', error)
+        return false
+      })
+      console.log(formData)
+
       return {
-        member: response[0]
+        member: memberData,
+        groupsItems: formData.groups,
+        employeeTypeItems: formData.employeeType,
+        jobCategoryItems: formData.jobCategory,
+        positionItems: formData.position,
+        recruitmentTypeItems: formData.recruitmentType
       }
     }
   }

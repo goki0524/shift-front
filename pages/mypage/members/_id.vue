@@ -260,9 +260,7 @@
 
       async updateMember() {
         let groupIdsStr = ''
-        console.log(this.member.groupIds)
         if (this.member.groupIds) {
-          console.log('#####')
           groupIdsStr = this.member.groupIds.join(',');
         }
         

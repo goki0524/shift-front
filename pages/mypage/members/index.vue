@@ -8,6 +8,7 @@
         class="fill-height"
         fluid
       >
+      <v-row justify="center">
        <v-simple-table height="500px" class="company-table">
          <template v-slot:default>
            <thead>
@@ -22,9 +23,6 @@
              </tr>
            </thead>
            <tbody v-for="member in members" :key="member.id">
-        
-              <nuxt-link :to="getMemberEditURL(member.id)" class="left-nav-a">
-              </nuxt-link>
             <tr>
               <td>{{ member.firstName }}{{ member.lastName }}</td>
               <td>{{ member.email }}</td>
@@ -40,13 +38,11 @@
                 </nuxt-link>
               </td>
             </tr>
-             
-            
-            
-           
+               
            </tbody>
          </template>
-       </v-simple-table>
+        </v-simple-table>
+       </v-row>
       </v-container>
     </v-content>
   <Footer />

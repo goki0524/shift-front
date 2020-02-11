@@ -9,10 +9,10 @@
         <nuxt-link to="/mypage" class="left-nav-a">
         <v-list-item link>
           <v-list-item-icon>
-            <v-icon>mdi-home</v-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
           </v-list-item-icon>
   
-          <v-list-item-title>ホーム</v-list-item-title>
+          <v-list-item-title>ダッシュボード</v-list-item-title>
         </v-list-item>
         </nuxt-link>
 
@@ -47,56 +47,15 @@
           
         </v-list-group>
 
-        <v-list-group
-          prepend-icon="mdi-account-multiple"
-        >
-          <template v-slot:activator>
+        <nuxt-link to="/mypage/groups" class="left-nav-a">
+          <v-list-item link>
+            <v-list-item-icon>
+              <v-icon>mdi-account-multiple</v-icon>
+            </v-list-item-icon>
+    
             <v-list-item-title>グループ</v-list-item-title>
-          </template>
-  
-          <v-list-group
-            no-action
-            sub-group
-          >
-            <template v-slot:activator>
-              <v-list-item-content>
-                <v-list-item-title>グループ管理</v-list-item-title>
-              </v-list-item-content>
-            </template>
-  
-            <v-list-item
-              v-for="(admin, i) in admins"
-              :key="i"
-              link
-            >
-              <v-list-item-title v-text="admin[0]"></v-list-item-title>
-              <v-list-item-icon>
-                <v-icon v-text="admin[1]"></v-icon>
-              </v-list-item-icon>
-            </v-list-item>
-          </v-list-group>
-  
-          <v-list-group
-            sub-group
-            no-action
-          >
-            <template v-slot:activator>
-              <v-list-item-content>
-                <v-list-item-title>グループ登録</v-list-item-title>
-              </v-list-item-content>
-            </template>
-            <v-list-item
-              v-for="(crud, i) in cruds"
-              :key="i"
-              link
-            >
-              <v-list-item-title v-text="crud[0]"></v-list-item-title>
-              <v-list-item-action>
-                <v-icon v-text="crud[1]"></v-icon>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list-group>
-        </v-list-group>
+          </v-list-item>
+        </nuxt-link>
 
 
         <v-list-group
@@ -135,6 +94,58 @@
             <template v-slot:activator>
               <v-list-item-content>
                 <v-list-item-title>配信予約</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              v-for="(crud, i) in cruds"
+              :key="i"
+              link
+            >
+              <v-list-item-title v-text="crud[0]"></v-list-item-title>
+              <v-list-item-action>
+                <v-icon v-text="crud[1]"></v-icon>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list-group>
+        </v-list-group>
+
+
+        <v-list-group
+          prepend-icon="mdi-calendar-check"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>施術予約</v-list-item-title>
+          </template>
+  
+          <v-list-group
+            no-action
+            sub-group
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title>予約状況</v-list-item-title>
+              </v-list-item-content>
+            </template>
+  
+            <v-list-item
+              v-for="(admin, i) in admins"
+              :key="i"
+              link
+            >
+              <v-list-item-title v-text="admin[0]"></v-list-item-title>
+              <v-list-item-icon>
+                <v-icon v-text="admin[1]"></v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+  
+          <v-list-group
+            sub-group
+            no-action
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title>予約する</v-list-item-title>
               </v-list-item-content>
             </template>
             <v-list-item

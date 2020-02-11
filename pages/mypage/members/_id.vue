@@ -99,16 +99,16 @@
                 ></v-select>
 
                 <header class="input-lable">職種</header>
-                {{jobCategoryId}}
+                {{member.jobCategoryId}}
                 <v-select
                   v-model="member.jobCategoryId"
-                  :items="groupsItems"
+                  :items="jobCategoryItems"
                   item-value="id"
                   item-text="name"
                 ></v-select>
 
                 <header class="input-lable">役職</header>
-                {{positionId}}
+                {{member.positionId}}
                 <v-select
                   v-model="member.positionId"
                   :items="positionItems"
@@ -117,7 +117,7 @@
                 ></v-select>
 
                 <header class="input-lable">雇用区分</header>
-                {{employmentType}}
+                {{member.employmentType}}
                 <v-select
                   v-model="member.employmentType"
                   :items="employeeTypeItems"
@@ -126,7 +126,7 @@
                 ></v-select>
 
                 <header class="input-lable">新卒/中途</header>
-                {{recruitmentType}}
+                {{member.recruitmentType}}
                 <v-select
                   v-model="member.recruitmentType"
                   :items="recruitmentTypeItems"
@@ -135,14 +135,16 @@
                 ></v-select>
 
                 <header class="input-lable">所属グループ</header>
-                {{groups}}
+                {{member.groupIds}}
                 <v-select
-                  v-model="member.groups"
+                  v-model="member.groupIds"
                   :items="groupsItems"
                   item-value="id"
                   item-text="groupName"
+                  
+                  chips
+                  multiple
                 ></v-select>
-
 
                 <header class="input-lable">メモ</header>
                 {{member.memo}}
@@ -152,16 +154,14 @@
                 ></v-textarea>
 
                 <header class="input-lable">配信</header>
+                {{member.isDelivery}}
                 <v-radio-group v-model="member.isDelivery" row>
                   <v-radio
-                    label="配信する"
-                    color="primary"
-                    value="true"
-                  ></v-radio>
-                  <v-radio
-                    label="配信しない"
-                    color="red"
-                    value="false"
+                    v-for="n in 2"
+                    :key="n"
+                    :value="n-1"
+                    :label="deliveryText[n-1]"
+                    :color="deliveryColor[n-1]"
                   ></v-radio>
                 </v-radio-group>
 
@@ -228,6 +228,8 @@
 
         genderText: ['男性', '女性'],
         genderColor: ['blue', 'red'],
+        deliveryText:['配信しない', '配信する'],
+        deliveryColor: ['red', 'blue'],
 
         rules: {
           email: v => (v || '').match(/@/) ? true : 'Emailアドレスが正しくありません',
@@ -236,7 +238,6 @@
       }
     },
     computed: {
-    
       getYearItems() {
         const nowYear = new Date().getFullYear()
         const start = nowYear - 100
@@ -258,7 +259,13 @@
     methods: {
 
       async updateMember() {
-
+        let groupIdsStr = ''
+        console.log(this.member.groupIds)
+        if (this.member.groupIds) {
+          console.log('#####')
+          groupIdsStr = this.member.groupIds.join(',');
+        }
+        
         const data = {
           customId: this.member.customId,
           jobCategoryId: this.member.jobCategoryId,
@@ -269,8 +276,10 @@
           lastName: this.member.lastName,
           email: this.member.email,
           gender: this.member.gender,
+          groupIds: groupIdsStr,
           birthday: this.getBirthday,
           memo: this.member.memo,
+          isDelivery: this.member.isDelivery
         }
 
         this.isLoading = true

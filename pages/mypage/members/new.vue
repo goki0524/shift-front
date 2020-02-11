@@ -54,14 +54,11 @@
                 <header class="input-lable">性別</header>
                 <v-radio-group v-model="gender" row>
                   <v-radio
-                    label="男性"
-                    color="primary"
-                    value="1"
-                  ></v-radio>
-                  <v-radio
-                    label="女性"
-                    color="red"
-                    value="2"
+                    v-for="n in 2"
+                    :key="n"
+                    :value="n"
+                    :label="genderText[n-1]"
+                    :color="genderColor[n-1]"
                   ></v-radio>
                 </v-radio-group>
 
@@ -116,12 +113,15 @@
                 ></v-select>
 
                 <header class="input-lable">所属グループ</header>
-                {{groups}}
+                {{groupIds}}
                 <v-select
-                  v-model="groups"
+                  v-model="groupIds"
                   :items="groupsItems"
                   item-value="id"
                   item-text="groupName"
+                  attach
+                  chips
+                  multiple
                 ></v-select>
 
                 <header class="input-lable">メモ</header>
@@ -132,16 +132,14 @@
                 ></v-textarea>
 
                 <header class="input-lable">配信</header>
+                {{isDelivery}}
                 <v-radio-group v-model="isDelivery" row>
                   <v-radio
-                    label="配信する"
-                    color="primary"
-                    value="true"
-                  ></v-radio>
-                  <v-radio
-                    label="配信しない"
-                    color="red"
-                    value="false"
+                    v-for="n in 2"
+                    :key="n"
+                    :value="n-1"
+                    :label="deliveryText[n-1]"
+                    :color="deliveryColor[n-1]"
                   ></v-radio>
                 </v-radio-group>
               </v-card-text>
@@ -205,7 +203,7 @@
         customId: null,
         email: '',
         gender: null,
-        groups: null,
+        groupIds: [],
         employmentType: null,
         jobCategoryId: null,
         positionId: null,
@@ -216,6 +214,10 @@
         birthday: null,
         memo: '',
         isDelivery: null,
+        genderText: ['男性', '女性'],
+        genderColor: ['blue', 'red'],
+        deliveryText:['配信しない', '配信する'],
+        deliveryColor: ['red', 'blue'],
         rules: {
           email: v => (v || '').match(/@/) ? true : 'Emailアドレスが正しくありません',
           required: v => !!v || 'この項目は必須です',
@@ -244,6 +246,10 @@
     methods: {
     
     async storeMember() {
+      let groupIdsStr = ''
+      if (this.groupIds) {
+        groupIdsStr = this.groupIds.join(',');
+      }
 
       const data = {
         customId: this.customId,
@@ -256,7 +262,9 @@
         email: this.email,
         gender: this.gender,
         birthday: this.getBirthday,
+        groupIds: groupIdsStr,
         memo: this.memo,
+        isDelivery: this.isDelivery
       }
 
       this.isLoading = true

@@ -36,7 +36,7 @@
                         <td>
                           <nuxt-link :to="getMemberEditURL(member.id)" class="left-nav-a">
                             <v-btn class="ma-2" tile outlined color="success">
-                              <v-icon left>mdi-pencil</v-icon> Edit
+                              <v-icon left>mdi-pencil</v-icon>編集
                             </v-btn>
                           </nuxt-link>
                         </td>

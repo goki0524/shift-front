@@ -9,7 +9,7 @@
         fluid
       >
         <v-row justify="center">
-          <v-col cols="12" sm="10" md="8" lg="6">
+          <v-col cols="12" sm="10" md="8" lg="8">
             <v-snackbar
               v-model="postSuccess"
               :timeout="timeoutPostSuccess"
@@ -42,27 +42,25 @@
                 <v-toolbar-title class="title">データを入力してメンバーを登録してください</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
-
                 <header class="input-lable">名前</header>
-                <v-text-field
-                  v-model="member.firstName"
-                  :rules="[rules.required]"
-                  placeholder="姓"
-                  required
-                ></v-text-field>
-
-                <v-text-field
-                  v-model="member.lastName"
-                  :rules="[rules.required]"
-                  placeholder="名"
-                  required
-                ></v-text-field>
-
-                <header class="input-lable">ID</header>
-                <v-text-field
-                  v-model="member.customId"
-                  type="number"
-                ></v-text-field>
+                <v-row>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model="member.firstName"
+                      :rules="[rules.required]"
+                      placeholder="姓"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model="member.lastName"
+                      :rules="[rules.required]"
+                      placeholder="名"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
                 <header class="input-lable">メールアドレス</header>
                 <v-text-field
@@ -72,67 +70,96 @@
                   required
                 ></v-text-field>
 
-                <header class="input-lable">性別</header>
-                {{member.gender}}
-                <v-radio-group v-model="member.gender" row>
-                  <v-radio
-                    v-for="n in 2"
-                    :key="n"
-                    :value="n"
-                    :label="genderText[n-1]"
-                    :color="genderColor[n-1]"
-                  ></v-radio>
-                </v-radio-group>
+                <v-row>
+                  <v-col cols="4">
+                    <header class="input-lable">ID</header>
+                    <v-text-field
+                      v-model="member.customId"
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="8">
+                    <header class="input-lable">性別</header>
+                    {{member.gender}}
+                    <v-radio-group v-model="member.gender" row>
+                      <v-radio
+                        v-for="n in 2"
+                        :key="n"
+                        :value="n"
+                        :label="genderText[n-1]"
+                        :color="genderColor[n-1]"
+                      ></v-radio>
+                    </v-radio-group>
+                  </v-col>
+                </v-row>
 
                 <header class="input-lable">生年月日</header>
-                <v-select
-                  v-model="member.birthdayObj.year"
-                  :items="getYearItems"
-                ></v-select>
-                <v-select
-                  v-model="member.birthdayObj.month"
-                  :items="getMonthItems"
-                ></v-select>
-                <v-select
-                  v-model="member.birthdayObj.date"
-                  :items="getDateItems"
-                ></v-select>
+                <v-row>
+                  <v-col cols="4">
+                    <v-select
+                      v-model="member.birthdayObj.year"
+                      :items="getYearItems"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="4">
+                    <v-select
+                      v-model="member.birthdayObj.month"
+                      :items="getMonthItems"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="4">
+                    <v-select
+                      v-model="member.birthdayObj.date"
+                      :items="getDateItems"
+                    ></v-select>
+                  </v-col>
+                </v-row>
 
-                <header class="input-lable">職種</header>
-                {{member.jobCategoryId}}
-                <v-select
-                  v-model="member.jobCategoryId"
-                  :items="jobCategoryItems"
-                  item-value="id"
-                  item-text="name"
-                ></v-select>
+                <v-row>
+                  <v-col cols="6">
+                    <header class="input-lable">職種</header>
+                    {{member.jobCategoryId}}
+                    <v-select
+                      v-model="member.jobCategoryId"
+                      :items="jobCategoryItems"
+                      item-value="id"
+                      item-text="name"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="6">
+                    <header class="input-lable">役職</header>
+                    {{member.positionId}}
+                    <v-select
+                      v-model="member.positionId"
+                      :items="positionItems"
+                      item-value="id"
+                      item-text="name"
+                    ></v-select>
+                  </v-col>
+                </v-row>
 
-                <header class="input-lable">役職</header>
-                {{member.positionId}}
-                <v-select
-                  v-model="member.positionId"
-                  :items="positionItems"
-                  item-value="id"
-                  item-text="name"
-                ></v-select>
-
-                <header class="input-lable">雇用区分</header>
-                {{member.employmentType}}
-                <v-select
-                  v-model="member.employmentType"
-                  :items="employeeTypeItems"
-                  item-value="id"
-                  item-text="name"
-                ></v-select>
-
-                <header class="input-lable">新卒/中途</header>
-                {{member.recruitmentType}}
-                <v-select
-                  v-model="member.recruitmentType"
-                  :items="recruitmentTypeItems"
-                  item-value="id"
-                  item-text="name"
-                ></v-select>
+                <v-row>
+                  <v-col cols="6">
+                    <header class="input-lable">雇用区分</header>
+                    {{member.employmentType}}
+                    <v-select
+                      v-model="member.employmentType"
+                      :items="employeeTypeItems"
+                      item-value="id"
+                      item-text="name"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="6">
+                    <header class="input-lable">新卒/中途</header>
+                    {{member.recruitmentType}}
+                    <v-select
+                      v-model="member.recruitmentType"
+                      :items="recruitmentTypeItems"
+                      item-value="id"
+                      item-text="name"
+                    ></v-select>
+                  </v-col>
+                </v-row>
 
                 <header class="input-lable">所属グループ</header>
                 {{member.groupIds}}

@@ -9,37 +9,68 @@
         fluid
       >
       <v-row justify="center">
-        <v-dialog v-model="groupDetailDialog" scrollable max-width="300px">
+        <v-dialog v-model="groupDetailDialog" scrollable max-width="600px">
           <v-card>
-            <v-card-title>{{groupDetailDialogItems}}</v-card-title>
+            <v-tabs
+              v-model="tab"
+              background-color="teal"
+              centered
+              dark
+              icons-and-text
+            >
+              <v-tabs-slider></v-tabs-slider>
+              <v-tab href="#tab-1">
+                メンバー
+                <v-icon>mdi-account-box</v-icon>
+              </v-tab>
+              <v-tab href="#tab-2">
+                新規追加
+                <v-icon>mdi-account-plus</v-icon>
+              </v-tab>
+              <v-tabs-items v-model="tab">
+                <v-tab-item
+                  v-for="i in 2"
+                  :key="i"
+                  :value="'tab-' + i"
+                >
+                  <v-card flat>
+                    <v-card-text>
+                      <div class="group-title">{{getGroupTitle}}</div>
+                      <div class="group-dialog-btn">
+                        <v-btn
+                          color="teal"
+                          outlined
+                          @click="moveGroup()"
+                        >
+                        グループを移動
+                        </v-btn>
+                        <v-btn
+                          color="red"
+                          outlined
+                          @click="removeMember()"
+                        >
+                        グループから削除
+                        </v-btn>
+                      </div>
+                    </v-card-text>
+                    <div class="treeview">
+                      <!-- {{selectionMembers}} -->
+                      <v-treeview
+                        v-model="selectionMembers"
+                        :items="getMembers"
+                        :selection-type="'leaf'"
+                        :selected-color="'teal'"
+                        selectable
+                        return-object
+                        open-all
+                      ></v-treeview>
+                    </div>
+                  </v-card>
+                </v-tab-item>
+              </v-tabs-items>
+            </v-tabs>
+            
             <v-divider></v-divider>
-            <v-card-text style="height: 300px;">
-              <v-radio-group v-model="dialogm1" column>
-                <v-radio label="Bahamas, The" value="bahamas"></v-radio>
-                <v-radio label="Bahrain" value="bahrain"></v-radio>
-                <v-radio label="Bangladesh" value="bangladesh"></v-radio>
-                <v-radio label="Barbados" value="barbados"></v-radio>
-                <v-radio label="Belarus" value="belarus"></v-radio>
-                <v-radio label="Belgium" value="belgium"></v-radio>
-                <v-radio label="Belize" value="belize"></v-radio>
-                <v-radio label="Benin" value="benin"></v-radio>
-                <v-radio label="Bhutan" value="bhutan"></v-radio>
-                <v-radio label="Bolivia" value="bolivia"></v-radio>
-                <v-radio label="Bosnia and Herzegovina" value="bosnia"></v-radio>
-                <v-radio label="Botswana" value="botswana"></v-radio>
-                <v-radio label="Brazil" value="brazil"></v-radio>
-                <v-radio label="Brunei" value="brunei"></v-radio>
-                <v-radio label="Bulgaria" value="bulgaria"></v-radio>
-                <v-radio label="Burkina Faso" value="burkina"></v-radio>
-                <v-radio label="Burma" value="burma"></v-radio>
-                <v-radio label="Burundi" value="burundi"></v-radio>
-              </v-radio-group>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
-              <v-btn color="blue darken-1" text @click="groupDetailDialog = false">Close</v-btn>
-              <v-btn color="blue darken-1" text @click="groupDetailDialog = false">Save</v-btn>
-            </v-card-actions>
           </v-card>
         </v-dialog>
       </v-row>
@@ -47,7 +78,7 @@
       <v-row justify="center">
         <v-dialog v-model="groupAddDalog" persistent max-width="600px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark v-on="on">新規グループを追加</v-btn>
+            <v-btn color="teal" dark v-on="on">新規グループを追加</v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -70,8 +101,8 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="groupAddDalog = false">閉じる</v-btn>
-              <v-btn color="blue darken-1" text @click="groupAddDalog = false; postGroupName()">作成</v-btn>
+              <v-btn color="teal" text @click="groupAddDalog = false">閉じる</v-btn>
+              <v-btn color="teal" text @click="groupAddDalog = false; postGroupName()">作成</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -79,25 +110,23 @@
 
       <v-row justify="center">
         <v-col cols="12" sm="6">
-        <v-card>
-          <v-list two-line>
+          <v-card>
+            <v-list two-line>
+              <template v-for="(item, index) in getGroups">
+                <v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader>
+                <v-divider v-else-if="item.divider" :key="index"></v-divider>
+                <v-list-item v-else :key="item.title" @click="openGroupDetailDialog(item)">
+                  <v-list-item-content>
+                    <v-list-item-title v-html="item.title"></v-list-item-title>
+                    <!-- <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle> -->
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+            </v-list>
+          </v-card>
+        </v-col>
+      </v-row>
 
-            <template v-for="(item, index) in getGroups">
-              <v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader>
-              <v-divider v-else-if="item.divider" :key="index"></v-divider>
-              <v-list-item v-else :key="item.title" @click="openGroupDetailDialog(item)">
-
-                <v-list-item-content>
-                  <v-list-item-title v-html="item.title"></v-list-item-title>
-                  <!-- <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle> -->
-                  
-                </v-list-item-content>
-              </v-list-item>
-            </template>
-          </v-list>
-        </v-card>
-      </v-col>
-       </v-row>
       </v-container>
     </v-content>
     
@@ -109,6 +138,15 @@
 .left-nav-a {
   color : inherit;
   text-decoration : none;
+}
+.group-dialog-btn {
+  text-align: right;
+}
+.group-title {
+  font-size: 1.2em;
+}
+.treeview {
+  padding-left: 10px;
 }
 </style>
 
@@ -133,18 +171,10 @@
         groups: [],
         groupAddDalog: false,
         groupDetailDialog: false,
-        groupDetailDialogItems: [],
+        selectedGroup: [],
         groupName: '',
-        dialogm1: '',
-       
-        // items: [
-        //   { header: 'グループ' },
-        //   { title: 'Brunch this weekend?', subtitle: "<span class='text--primary'>Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?" },
-        //   { divider: true },
-        //   { title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>', subtitle: "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend." },
-        //   { divider: true },
-        //   { title: 'Oui oui', subtitle: "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?" },
-        // ],
+        tab: null,
+        selectionMembers:[],
       }
     },
     computed: {
@@ -152,6 +182,7 @@
         let groupItems = []
         this.groups.forEach((group, i) => {
           let obj = {}
+          obj.id = group.id
           obj.title = group.groupName
           if (i === 0) {
             groupItems.push({ header: 'グループ' })
@@ -161,15 +192,41 @@
             groupItems.push({ divider: true })
           }
         })
-        console.log(groupItems)
         return groupItems
-      }
+      },
+      getGroupTitle() {
+        if (this.selectedGroup.length){
+          return this.selectedGroup[0].title
+        }
+      },
+      getMembers() {
+        if (this.selectedGroup.length){
+          const groupId = this.selectedGroup[0].id
+          if (this.groups.length){
+            let memberItems = [
+              {
+                id: 0,
+                name: 'すべてのメンバー',
+                children: null,
+              },
+            ]
+            let arr = []
+            this.groups.forEach( group => {
+              if (groupId == group.id) {
+                arr.push(...group.members)
+              }
+            })
+              memberItems[0].children = arr
+            return memberItems
+          }
+        }
+      },
     },
     methods: {
       openGroupDetailDialog(group) {
         this.groupDetailDialog = true
-        this.groupDetailDialogItems.shift()
-        this.groupDetailDialogItems.push(group)
+        this.selectedGroup.shift()
+        this.selectedGroup.push(group)
       },
       async postGroupName() {
         const data = {
@@ -190,7 +247,7 @@
             console.log('response error groups', error)
           })
         this.isLoading = false
-        console.log(response)
+        // console.log(response)
 
         if (response && response.length > 0){
           if (response[0].hasOwnProperty('message')) {
@@ -204,6 +261,13 @@
           this.groupName = ''
         }
       },
+      async moveGroup() {
+
+      },
+      async removeMember() {
+
+      },
+
   
     },
     async asyncData({ $axios, query, store }) {
@@ -219,7 +283,6 @@
         console.log('response error: ', error)
         return false
       })
-      console.log(response)
       return {
         groups: response
       }

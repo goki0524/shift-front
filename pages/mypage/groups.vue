@@ -113,9 +113,9 @@
           <v-card>
             <v-list two-line>
               <template v-for="(item, index) in getGroups">
-                <v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader>
+                <v-subheader v-if="item.header" :key="index">{{ item.header }}</v-subheader>
                 <v-divider v-else-if="item.divider" :key="index"></v-divider>
-                <v-list-item v-else :key="item.title" @click="openGroupDetailDialog(item)">
+                <v-list-item v-else :key="index" @click="openGroupDetailDialog(item)">
                   <v-list-item-content>
                     <v-list-item-title v-html="item.title"></v-list-item-title>
                     <!-- <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle> -->

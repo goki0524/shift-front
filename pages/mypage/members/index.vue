@@ -8,41 +8,47 @@
         class="fill-height"
         fluid
       >
-      <v-row justify="center">
-       <v-simple-table height="500px" class="company-table">
-         <template v-slot:default>
-           <thead>
-            <tr>
-               <th>氏名</th>
-               <th>メールアドレス</th>
-               <th>性別</th>
-               <th>職種</th>
-               <th>役職</th>
-               <th>雇用形態</th>
-               <th></th>
-             </tr>
-           </thead>
-           <tbody v-for="member in members" :key="member.id">
-            <tr>
-              <td>{{ member.firstName }}{{ member.lastName }}</td>
-              <td>{{ member.email }}</td>
-              <td>{{ member.genderString }}</td>
-              <td>{{ member.jobCategoryName }}</td>
-              <td>{{ member.positionName }}</td>
-              <td>{{ member.employmentTypeName }}</td>
-              <td>
-                <nuxt-link :to="getMemberEditURL(member.id)" class="left-nav-a">
-                  <v-btn class="ma-2" tile outlined color="success">
-                    <v-icon left>mdi-pencil</v-icon> Edit
-                  </v-btn>
-                </nuxt-link>
-              </td>
-            </tr>
-               
-           </tbody>
-         </template>
-        </v-simple-table>
-       </v-row>
+        <v-row justify="center">
+          <v-col cols="12">
+            <v-card flat>
+              <v-card-text>
+                <v-simple-table fixed-header height="550px" class="company-table">
+                  <template v-slot:default>
+                    <thead>
+                      <tr>
+                        <th>氏名</th>
+                        <th>メールアドレス</th>
+                        <th>性別</th>
+                        <th>職種</th>
+                        <th>役職</th>
+                        <th>雇用形態</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody v-for="member in members" :key="member.id">
+                      <tr>
+                        <td>{{ member.firstName }}{{ member.lastName }}</td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.genderString }}</td>
+                        <td>{{ member.jobCategoryName }}</td>
+                        <td>{{ member.positionName }}</td>
+                        <td>{{ member.employmentTypeName }}</td>
+                        <td>
+                          <nuxt-link :to="getMemberEditURL(member.id)" class="left-nav-a">
+                            <v-btn class="ma-2" tile outlined color="success">
+                              <v-icon left>mdi-pencil</v-icon> Edit
+                            </v-btn>
+                          </nuxt-link>
+                        </td>
+                      </tr>
+                        
+                    </tbody>
+                  </template>
+                </v-simple-table>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-container>
     </v-content>
   <Footer />

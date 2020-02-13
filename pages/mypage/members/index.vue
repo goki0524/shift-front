@@ -10,7 +10,7 @@
       >
         <v-row justify="center">
           <v-col cols="12">
-            <v-card flat>
+            <v-card>
               <v-card-text>
                 <v-simple-table fixed-header height="550px" class="company-table">
                   <template v-slot:default>

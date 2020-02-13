@@ -8,34 +8,39 @@
         class="fill-height"
         fluid
       >
-      
-       <v-simple-table height="340px" class="company-table">
-         <template v-slot:default>
-           <tbody>
-            <tr>
-              <td><span class="label">ID:</span>{{ company.id }}</td>
-            </tr>
-            <tr>
-              <td><span class="label">会社名:</span>{{ company.companyName }}</td>
-            </tr>
-            <tr>
-              <td><span class="label">メールアドレス:</span>{{ company.email }}</td>
-            </tr>
-            <tr>
-              <td><span class="label">電話番号:</span>{{ company.phoneNumber }}</td>
-            </tr>
-            <tr>
-              <td><span class="label">URL:</span>{{ company.url }}</td>
-            </tr>
-            <tr>
-              <td><span class="label">郵便番号:</span>{{ company.zip }}</td>
-            </tr>
-            <tr>
-              <td><span class="label">所在地:</span>{{ company.fullAddress }}</td>
-            </tr>             
-           </tbody>
-         </template>
-       </v-simple-table>
+        <v-row justify="center">
+          <v-col cols="8">
+            <v-card>
+              <v-simple-table>
+                <template v-slot:default>
+                  <tbody>
+                    <tr>
+                      <td><span class="label">ID:</span>{{ company.id }}</td>
+                    </tr>
+                    <tr>
+                      <td><span class="label">会社名:</span>{{ company.companyName }}</td>
+                    </tr>
+                    <tr>
+                      <td><span class="label">メールアドレス:</span>{{ company.email }}</td>
+                    </tr>
+                    <tr>
+                      <td><span class="label">電話番号:</span>{{ company.phoneNumber }}</td>
+                    </tr>
+                    <tr>
+                      <td><span class="label">URL:</span>{{ company.url }}</td>
+                    </tr>
+                    <tr>
+                      <td><span class="label">郵便番号:</span>{{ company.zip }}</td>
+                    </tr>
+                    <tr>
+                      <td><span class="label">所在地:</span>{{ company.fullAddress }}</td>
+                    </tr>             
+                  </tbody>
+                </template>
+              </v-simple-table>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-container>
     </v-content>
   <Footer />
@@ -46,11 +51,6 @@
 .left-nav-a {
   color : inherit;
   text-decoration : none;
-}
-.company-table {
-  width: 600px;
-  margin-right: auto;
-  margin-left : auto;
 }
 .label {
   color: grey;

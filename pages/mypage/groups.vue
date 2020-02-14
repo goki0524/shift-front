@@ -152,8 +152,9 @@
 
 
 <script>
-  // import { mapGetters } from 'vuex'
-  const API_URL = 'http://127.0.0.1:3333/api/v1/company/groups'
+  const API_URL_GROUPS = 'http://127.0.0.1:3333/api/v1/company/groups'
+  const API_URL_MEMBERS_GROUPS = 'http://127.0.0.1:3333/api/v1/members_groups'
+
   import querystring from 'querystring'
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'
@@ -237,7 +238,7 @@
         const accessToken = this.$store.getters['auth/accessToken']
         const token = accessToken.token
         const response = await this.$axios
-          .$post(API_URL, querystring.stringify({ ...data }),
+          .$post(API_URL_GROUPS, querystring.stringify({ ...data }),
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -265,16 +266,39 @@
 
       },
       async removeMember() {
-
+        if (this.selectedGroup.length) {
+          const groupId = this.selectedGroup[0].id
+          const memberIdsArr = this.selectionMembers.map( member => {
+            return member.id
+          })
+          const memberIds = memberIdsArr.join(',')
+          const data = {
+            groupId: groupId,
+            memberIds: memberIds
+          }
+          
+          this.isLoading = true
+          const accessToken = this.$store.getters['auth/accessToken']
+          const token = accessToken.token
+          const headers = {Authorization: `Bearer ${token}`}
+          const response = await this.$axios
+            .$delete(API_URL_MEMBERS_GROUPS, {
+              headers: headers,
+              data: data
+            })
+            .catch(error => {
+              console.log('response error groups', error)
+            })
+          this.isLoading = false
+          console.log(response)
+        }
       },
-
-  
     },
     async asyncData({ $axios, query, store }) {
       const accessToken = store.getters['auth/accessToken']
       const token = accessToken.token
       const response = await $axios
-      .$get(API_URL, {
+      .$get(API_URL_GROUPS, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

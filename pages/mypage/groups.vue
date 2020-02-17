@@ -53,18 +53,22 @@
                         </v-btn>
                       </div>
                     </v-card-text>
-                    <div class="treeview">
-                      <!-- {{selectionMembers}} -->
-                      <v-treeview
-                        v-model="selectionMembers"
-                        :items="getMembers"
-                        :selection-type="'leaf'"
-                        :selected-color="'teal'"
-                        selectable
-                        return-object
-                        open-all
-                      ></v-treeview>
-                    </div>
+                    <v-row>
+                      <v-col>
+                        <div class="treeview">
+                          <!-- {{selectionMembers}} -->
+                          <v-treeview
+                            v-model="selectionMembers"
+                            :items="memberItems"
+                            :selection-type="'leaf'"
+                            :selected-color="'teal'"
+                            selectable
+                            return-object
+                            open-all
+                          ></v-treeview>
+                        </div>
+                      </v-col>
+                    </v-row>
                   </v-card>
                 </v-tab-item>
               </v-tabs-items>
@@ -176,6 +180,7 @@
         groupName: '',
         tab: null,
         selectionMembers:[],
+        memberItems: [],
       }
     },
     computed: {
@@ -196,30 +201,8 @@
         return groupItems
       },
       getGroupTitle() {
-        if (this.selectedGroup.length){
+        if (this.selectedGroup.length) {
           return this.selectedGroup[0].title
-        }
-      },
-      getMembers() {
-        if (this.selectedGroup.length){
-          const groupId = this.selectedGroup[0].id
-          if (this.groups.length){
-            let memberItems = [
-              {
-                id: 0,
-                name: 'すべてのメンバー',
-                children: null,
-              },
-            ]
-            let arr = []
-            this.groups.forEach( group => {
-              if (groupId == group.id) {
-                arr.push(...group.members)
-              }
-            })
-              memberItems[0].children = arr
-            return memberItems
-          }
         }
       },
     },
@@ -228,6 +211,22 @@
         this.groupDetailDialog = true
         this.selectedGroup.shift()
         this.selectedGroup.push(group)
+        this.getMembers()
+      },
+      getMembers() {
+        if (this.selectedGroup.length) {
+          const groupId = this.selectedGroup[0].id
+          if (this.groups.length){
+            let arr = []
+            this.groups.forEach( group => {
+              if (groupId == group.id) {
+                arr.push(...group.members)
+              }
+            })
+            this.memberItems.splice(0)
+            this.memberItems.push(...arr)
+          }
+        }
       },
       async postGroupName() {
         const data = {
@@ -269,7 +268,7 @@
         if (this.selectedGroup.length) {
           const groupId = this.selectedGroup[0].id
           const memberIdsArr = this.selectionMembers.map( member => {
-            return member.id
+            if (member.id !== 0) return member.id
           })
           const memberIds = memberIdsArr.join(',')
           const data = {
@@ -289,10 +288,24 @@
             .catch(error => {
               console.log('response error groups', error)
             })
-          this.isLoading = false
           console.log(response)
+
+          this.groups.forEach((group, groupIndex) => {
+            if (group.id === groupId) {
+               memberIdsArr.forEach(id => {
+                group.members.forEach((member, memberIndex) =>　{
+                  if(member.id === id){
+                    this.$delete(this.groups[groupIndex].members, memberIndex)
+                  }
+                })
+              })
+            }
+          })
+          this.getMembers()
+          this.isLoading = false
         }
       },
+
     },
     async asyncData({ $axios, query, store }) {
       const accessToken = store.getters['auth/accessToken']

@@ -53,18 +53,22 @@
                         </v-btn>
                       </div>
                     </v-card-text>
-                    <div class="treeview">
-                      <!-- {{selectionMembers}} -->
-                      <v-treeview
-                        v-model="selectionMembers"
-                        :items="getMembers"
-                        :selection-type="'leaf'"
-                        :selected-color="'teal'"
-                        selectable
-                        return-object
-                        open-all
-                      ></v-treeview>
-                    </div>
+                    <v-row>
+                      <v-col>
+                        <div class="treeview">
+                          <!-- {{selectionMembers}} -->
+                          <v-treeview
+                            v-model="selectionMembers"
+                            :items="memberItems"
+                            :selection-type="'leaf'"
+                            :selected-color="'teal'"
+                            selectable
+                            return-object
+                            open-all
+                          ></v-treeview>
+                        </div>
+                      </v-col>
+                    </v-row>
                   </v-card>
                 </v-tab-item>
               </v-tabs-items>
@@ -152,8 +156,9 @@
 
 
 <script>
-  // import { mapGetters } from 'vuex'
-  const API_URL = 'http://127.0.0.1:3333/api/v1/company/groups'
+  const API_URL_GROUPS = 'http://127.0.0.1:3333/api/v1/company/groups'
+  const API_URL_MEMBERS_GROUPS = 'http://127.0.0.1:3333/api/v1/members_groups'
+
   import querystring from 'querystring'
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'
@@ -175,6 +180,7 @@
         groupName: '',
         tab: null,
         selectionMembers:[],
+        memberItems: [],
       }
     },
     computed: {
@@ -195,30 +201,8 @@
         return groupItems
       },
       getGroupTitle() {
-        if (this.selectedGroup.length){
+        if (this.selectedGroup.length) {
           return this.selectedGroup[0].title
-        }
-      },
-      getMembers() {
-        if (this.selectedGroup.length){
-          const groupId = this.selectedGroup[0].id
-          if (this.groups.length){
-            let memberItems = [
-              {
-                id: 0,
-                name: 'すべてのメンバー',
-                children: null,
-              },
-            ]
-            let arr = []
-            this.groups.forEach( group => {
-              if (groupId == group.id) {
-                arr.push(...group.members)
-              }
-            })
-              memberItems[0].children = arr
-            return memberItems
-          }
         }
       },
     },
@@ -227,6 +211,22 @@
         this.groupDetailDialog = true
         this.selectedGroup.shift()
         this.selectedGroup.push(group)
+        this.getMembers()
+      },
+      getMembers() {
+        if (this.selectedGroup.length) {
+          const groupId = this.selectedGroup[0].id
+          if (this.groups.length){
+            let arr = []
+            this.groups.forEach( group => {
+              if (groupId == group.id) {
+                arr.push(...group.members)
+              }
+            })
+            this.memberItems.splice(0)
+            this.memberItems.push(...arr)
+          }
+        }
       },
       async postGroupName() {
         const data = {
@@ -237,7 +237,7 @@
         const accessToken = this.$store.getters['auth/accessToken']
         const token = accessToken.token
         const response = await this.$axios
-          .$post(API_URL, querystring.stringify({ ...data }),
+          .$post(API_URL_GROUPS, querystring.stringify({ ...data }),
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -265,16 +265,53 @@
 
       },
       async removeMember() {
+        if (this.selectedGroup.length) {
+          const groupId = this.selectedGroup[0].id
+          const memberIdsArr = this.selectionMembers.map( member => {
+            if (member.id !== 0) return member.id
+          })
+          const memberIds = memberIdsArr.join(',')
+          const data = {
+            groupId: groupId,
+            memberIds: memberIds
+          }
+          
+          this.isLoading = true
+          const accessToken = this.$store.getters['auth/accessToken']
+          const token = accessToken.token
+          const headers = {Authorization: `Bearer ${token}`}
+          const response = await this.$axios
+            .$delete(API_URL_MEMBERS_GROUPS, {
+              headers: headers,
+              data: data
+            })
+            .catch(error => {
+              console.log('response error groups', error)
+            })
+          console.log(response)
 
+          this.groups.forEach((group, groupIndex) => {
+            if (group.id === groupId) {
+               memberIdsArr.forEach(id => {
+                group.members.forEach((member, memberIndex) =>　{
+                  if(member.id === id){
+                    this.$delete(this.groups[groupIndex].members, memberIndex)
+                  }
+                })
+              })
+            }
+          })
+          this.getMembers()
+          this.isLoading = false
+        }
       },
 
-  
     },
     async asyncData({ $axios, query, store }) {
       const accessToken = store.getters['auth/accessToken']
       const token = accessToken.token
       const response = await $axios
-      .$get(API_URL, {
+      .$get(API_URL_GROUPS, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

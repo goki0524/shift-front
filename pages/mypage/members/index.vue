@@ -89,7 +89,7 @@
         return url
       }
     },
-    async asyncData({ $axios, query, store }) {
+    async asyncData({ $axios, store }) {
       const accessToken = store.getters['auth/accessToken']
       const token = accessToken.token
       const response = await $axios

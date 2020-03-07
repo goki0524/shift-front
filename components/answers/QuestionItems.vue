@@ -5,7 +5,7 @@
         <v-icon>mdi-chevron-up</v-icon>
       </v-row>
       <v-row justify="center">
-        <v-btn color="teal" text small @click="stepper = stepper-1">もどる</v-btn>
+        <v-btn color="teal" text small @click="back()">もどる</v-btn>
       </v-row>
     </div>
     <v-row justify="center" class="mt-5">
@@ -31,25 +31,25 @@
     </div>
 
     <v-row justify="center">
-      <v-btn class="ma-1" outlined small fab color="teal" @click="stepper = stepper+1">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="stepper = stepper+1">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="stepper = stepper+1">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="stepper = stepper+1">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="stepper = stepper+1">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="stepper = stepper+1">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="stepper = stepper+1">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
     </v-row>
@@ -75,11 +75,6 @@
 <script>
   import { mapGetters } from 'vuex'
   export default {
-    props: {
-      stepper: {
-        type: Number
-      }
-    },
     computed: {
       getQuestionCount() {
         if (this.questions && this.questions.length > 0) {
@@ -87,10 +82,17 @@
         }
       },
       ...mapGetters({
+        stepper: 'answers/stepper',
         questions: 'answers/questions',
       })
     },
     methods: {
+      next() {
+        this.$store.commit('answers/setStepper', this.stepper+1)
+      },
+      back() {
+        this.$store.commit('answers/setStepper', this.stepper-1)
+      },
       getDefaultQuestions(index) {
         if (this.questions && this.questions.length > 0) {
           if (this.questions[index].hasOwnProperty('content')) {

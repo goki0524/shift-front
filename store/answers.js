@@ -2,6 +2,8 @@ export default {
   state: () => ({
     stepper: 1,
     questions: null,
+    answersArr: [],
+    tag:'',
   }),
 
   mutations: {
@@ -11,6 +13,15 @@ export default {
     setQuestions (state, questions) {
       state.questions = [...questions]
     },
+    addAnswersArr (state, answer) {
+      state.answersArr.push(answer)
+    },
+    deleteAnswersArr (state, answer) {
+      state.answersArr.pop(answer)
+    },
+    setTag (state, tag) {
+      state.tag = tag
+    }
   },
 
   getters: {
@@ -20,5 +31,11 @@ export default {
     questions (state) {
       return state.questions
     },
+    answersArr (state) {
+      return state.answersArr
+    },
+    tag (state) {
+      return state.tag
+    }
   },
 }

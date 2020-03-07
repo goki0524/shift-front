@@ -94,21 +94,21 @@
         this.$store.commit('answers/setStepper', this.stepper-1)
       },
       getDefaultQuestions(index) {
-        if (this.questions && this.questions.length > 0) {
+        if (this.questions && this.questions.length > 0 && this.stepper <= this.questions.length) {
           if (this.questions[index].hasOwnProperty('content')) {
             return this.questions[index].content
           }
         }
       },
       getAnswerBestWord(index) {
-        if (this.questions && this.questions.length > 0) {
+        if (this.questions && this.questions.length > 0 && this.stepper <= this.questions.length) {
           if (this.questions[index].hasOwnProperty('answerBestWord')) {
             return this.questions[index].answerBestWord
           }
         }
       },
       getAnswerLowestWord(index) {
-         if (this.questions && this.questions.length > 0) {
+         if (this.questions && this.questions.length > 0 && this.stepper <= this.questions.length) {
            if (this.questions[index].hasOwnProperty('answerLowestWord')) {
              return this.questions[index].answerLowestWord
            }

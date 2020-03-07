@@ -3,7 +3,14 @@
     <v-container>
       <v-layout row wrap>
         <v-flex xs12>
-          <Questions/>
+          <div v-if="error">
+            <v-row justify="center">
+              {{error}}
+            </v-row>
+          </div>
+          <div v-else>
+            <Questions/>
+          </div>
         </v-flex>
       </v-layout>
     </v-container>
@@ -49,8 +56,9 @@
           error = response.error.message
           console.log(error)
         }
+      } else {
+        store.commit('answers/setQuestions', response.data)
       }
-      store.commit('answers/setQuestions', response.data)
       return {
         error: error
       }

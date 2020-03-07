@@ -31,25 +31,25 @@
     </div>
 
     <v-row justify="center">
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next(1)">
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next(2)">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next(3)">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next(4)">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next(5)">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next(6)">
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next()">
+      <v-btn class="ma-1" outlined small fab color="teal" @click="next(7)">
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
     </v-row>
@@ -87,10 +87,12 @@
       })
     },
     methods: {
-      next() {
+      next(num) {
+        this.$store.commit('answers/addAnswersArr', num)
         this.$store.commit('answers/setStepper', this.stepper+1)
       },
       back() {
+        this.$store.commit('answers/deleteAnswersArr')
         this.$store.commit('answers/setStepper', this.stepper-1)
       },
       getDefaultQuestions(index) {

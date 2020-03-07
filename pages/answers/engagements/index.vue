@@ -58,6 +58,7 @@
         }
       } else {
         store.commit('answers/setQuestions', response.data)
+        store.commit('answers/setTag', tag)
       }
       return {
         error: error

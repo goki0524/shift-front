@@ -12,7 +12,7 @@
           <v-col cols="12">
             <v-card>
               <v-card-text>
-                <v-simple-table fixed-header height="550px" class="company-table">
+                <v-simple-table fixed-header height="550px">
                   <template v-slot:default>
                     <thead>
                       <tr>

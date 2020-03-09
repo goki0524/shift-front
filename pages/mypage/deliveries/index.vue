@@ -25,11 +25,11 @@
                   </thead>
                   <tbody v-for="delivery in deliveries" :key="delivery.id">
                     <tr>
-                      <td>{{ delivery.deliveryAt }}</td>
-                      <td>{{ delivery.deadlineAt }}</td>
+                      <td>{{ delivery.deliveryDate }}</td>
+                      <td>{{ delivery.deadlineDate }}</td>
                       <td>{{ delivery.deliveryCount }}名</td>
                       <td>{{ delivery.answerCount }}名</td>
-                      <td>{{ delivery.id }}%</td>
+                      <td>{{ delivery.answerRate }}%</td>
                     </tr>
                   </tbody>
                 </template>

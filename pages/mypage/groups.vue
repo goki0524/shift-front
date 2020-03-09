@@ -9,7 +9,7 @@
         fluid
       >
       <v-row justify="center">
-        <v-dialog v-model="groupDetailDialog" scrollable max-width="600px">
+        <v-dialog v-model="groupDetailDialog" scrollable max-width="650px">
           <v-card>
             <v-tabs
               v-model="tab"
@@ -37,16 +37,34 @@
                     <v-card-text>
                       <div class="group-title">{{getGroupTitle}}</div>
                       <div class="group-dialog-btn">
-                        <v-btn
-                          color="teal"
-                          outlined
-                          @click="moveGroup()"
-                        >
-                        グループを移動
-                        </v-btn>
+                        <v-menu offset-y>
+                          <template v-slot:activator="{ on }">
+                            <v-btn
+                              color="teal"
+                              outlined
+                              :loading="isPutLoading"
+                              class="group-edit-btn"
+                              v-on="on"
+                              :disabled="!selectionMembers.length"
+                            >
+                            グループを移動
+                            </v-btn>
+                          </template>
+                            <v-list>
+                              <v-list-item
+                                v-for="(item, index) in getGroups"
+                                :key="index"
+                                @click="moveGroup(item)"
+                              >
+                                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                              </v-list-item>
+                            </v-list> 
+                        </v-menu>
                         <v-btn
                           color="red"
                           outlined
+                          :loading="isDeleteLoading"
+                          :disabled="!selectionMembers.length"
                           @click="removeMember()"
                         >
                         グループから削除
@@ -106,7 +124,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="teal" text @click="groupAddDalog = false">閉じる</v-btn>
-              <v-btn color="teal" text @click="groupAddDalog = false; postGroupName()">作成</v-btn>
+              <v-btn color="teal" :loading="isPostLoading" text @click="groupAddDalog = false; postGroup()">作成</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -116,7 +134,7 @@
         <v-col cols="12" sm="6">
           <v-card>
             <v-list two-line>
-              <template v-for="(item, index) in getGroups">
+              <template v-for="(item, index) in getGroupsCardList">
                 <v-subheader v-if="item.header" :key="index">{{ item.header }}</v-subheader>
                 <v-divider v-else-if="item.divider" :key="index"></v-divider>
                 <v-list-item v-else :key="index" @click="openGroupDetailDialog(item)">
@@ -145,6 +163,10 @@
 }
 .group-dialog-btn {
   text-align: right;
+  margin-bottom: 20px;
+}
+.group-edit-btn {
+  margin-right: 7px;
 }
 .group-title {
   font-size: 1.2em;
@@ -173,6 +195,9 @@
     data() {
       return {
         drawer: true,
+        isPostLoading: false,
+        isPutLoading: false,
+        isDeleteLoading: false,
         groups: [],
         groupAddDalog: false,
         groupDetailDialog: false,
@@ -184,7 +209,7 @@
       }
     },
     computed: {
-      getGroups() {
+      getGroupsCardList() {
         let groupItems = []
         this.groups.forEach((group, i) => {
           let obj = {}
@@ -199,6 +224,21 @@
           }
         })
         return groupItems
+      },
+      getGroups() {
+        let groupItems = []
+        if (this.selectedGroup.length) {
+          const groupId = this.selectedGroup[0].id
+          this.groups.forEach((group, i) => {
+            let obj = {}
+            if (groupId !== group.id){
+              obj.id = group.id
+              obj.title = group.groupName
+              groupItems.push(obj)
+            }
+          })
+          return groupItems
+        }
       },
       getGroupTitle() {
         if (this.selectedGroup.length) {
@@ -228,12 +268,12 @@
           }
         }
       },
-      async postGroupName() {
+      async postGroup() {
         const data = {
           groupName: this.groupName
         }
         
-        this.isLoading = true
+        this.isPostLoading = true
         const accessToken = this.$store.getters['auth/accessToken']
         const token = accessToken.token
         const response = await this.$axios
@@ -246,8 +286,7 @@
           .catch(error => {
             console.log('response error groups', error)
           })
-        this.isLoading = false
-        // console.log(response)
+        this.isPostLoading = false
 
         if (response && response.length > 0){
           if (response[0].hasOwnProperty('message')) {
@@ -261,8 +300,40 @@
           this.groupName = ''
         }
       },
-      async moveGroup() {
+      async moveGroup(group) {
+        const latestGroupId = group.id
+        const preGroupId = this.selectedGroup[0].id
+        const memberIdsArr = this.selectionMembers.map( member => {
+          if (member.id !== 0) return member.id
+        })
+        const memberIds = memberIdsArr.join(',')
 
+        const data = {
+          latestGroupId: latestGroupId,
+          preGroupId: preGroupId,
+          memberIds: memberIds
+        }
+        this.isPutLoading = true
+        const accessToken = this.$store.getters['auth/accessToken']
+        const token = accessToken.token
+        const headers = {Authorization: `Bearer ${token}`}
+        const response = await this.$axios
+          .$put(API_URL_MEMBERS_GROUPS, querystring.stringify({ ...data }),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          })
+          .catch(error => {
+            console.log('response error groups put', error)
+          })
+        console.log(response)
+
+        // TODO: DBは関連付けを変更できているが、表示上変更されていないので,
+        //       PUT後にメンバーとグループの配列を操作する(関連付けをする)
+
+        this.getMembers()
+        this.isPutLoading = false
       },
       async removeMember() {
         if (this.selectedGroup.length) {
@@ -276,7 +347,7 @@
             memberIds: memberIds
           }
           
-          this.isLoading = true
+          this.isDeleteLoading = true
           const accessToken = this.$store.getters['auth/accessToken']
           const token = accessToken.token
           const headers = {Authorization: `Bearer ${token}`}
@@ -286,7 +357,7 @@
               data: data
             })
             .catch(error => {
-              console.log('response error groups', error)
+              console.log('response error groups delete', error)
             })
           console.log(response)
 
@@ -302,7 +373,7 @@
             }
           })
           this.getMembers()
-          this.isLoading = false
+          this.isDeleteLoading = false
         }
       },
 

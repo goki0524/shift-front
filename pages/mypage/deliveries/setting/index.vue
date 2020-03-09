@@ -169,17 +169,11 @@
     },
     methods: {
        async postDelivery() {
-        console.log(this.deliveryDate)
-        console.log(this.deadlineDate)
-        console.log(this.deliveryHour)
-        console.log(this.deliveryMinute)
 
         const data = {
           deliveryAt: this.getDeliveryAt(),
           deadlineAt: this.getDeadlineDate()
         }
-        console.log(data.deliveryAt)
-        console.log(data.deadlineDate)
         
         this.isLoading = true
         const accessToken = this.$store.getters['auth/accessToken']
@@ -195,7 +189,7 @@
             console.log('response error deliveries setting index', error)
           })
         this.isLoading = false
-        console.log(response)
+        
         if (response && response.length > 0){
           if (response[0].hasOwnProperty('message')) {
             this.error = response[0].message

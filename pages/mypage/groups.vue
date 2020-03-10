@@ -329,9 +329,25 @@
           })
         console.log(response)
 
-        // TODO: DBは関連付けを変更できているが、表示上変更されていないので,
-        //       PUT後にメンバーとグループの配列を操作する(関連付けをする)
-
+        // TODO: Refactoring
+        let latestGroupIndex = 0;
+        this.groups.forEach((group, groupIndex) => {
+          if (group.id === latestGroupId) {
+            latestGroupIndex = groupIndex
+          }
+        })
+        this.groups.forEach((group, groupIndex) => {
+          if (group.id === preGroupId) {
+              memberIdsArr.forEach(id => {
+              group.members.forEach((member, memberIndex) =>　{
+                if(member.id === id){
+                  this.groups[latestGroupIndex].members.push(member)
+                  this.$delete(this.groups[groupIndex].members, memberIndex)
+                }
+              })
+            })
+          }
+        })
         this.getMembers()
         this.isPutLoading = false
       },

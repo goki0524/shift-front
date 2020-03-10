@@ -282,8 +282,8 @@
         }
       },
       getAllMembers() {
-        this.groups.forEach( group => { 
-          this.allMemberItems.push(...group.members)
+        this.members.forEach( member => { 
+          this.allMemberItems.push(member)
         })
         let arrObj = {}
         for (let i = 0; i < this.allMemberItems.length; i++) {
@@ -507,7 +507,8 @@
         return false
       })
       return {
-        groups: response
+        groups: response.groups,
+        members: response.members
       }
     }
   }

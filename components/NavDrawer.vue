@@ -150,18 +150,6 @@
           </v-list-item>
         </nuxt-link>
 
-        <nuxt-link to="/mypage/contact" class="left-nav-a">
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-contact-mail</v-icon>
-          </v-list-item-icon>
-  
-          <v-list-item-title>お問い合わせ</v-list-item-title>
-        </v-list-item>
-        </nuxt-link>
-
-
-
       </v-list>
     </v-navigation-drawer>
   

@@ -2,7 +2,7 @@
   "name": "shift-front",
   "version": "1.0.0",
   "description": "My epic Nuxt.js project",
-  "author": "goki sakaguchi",
+  "author": "Goki Sakaguchi <goki0524@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "nuxt",

@@ -40,16 +40,16 @@
                   v-model="form"
                 >
                   <v-text-field
-                    v-model="firstName"
+                    v-model="lastName"
                     label="姓"
-                    name="firstName"
+                    name="lastName"
                     type="text"
                     :rules="[rules.required]"
                   />
                   <v-text-field
-                    v-model="lastName"
+                    v-model="firstName"
                     label="名"
-                    name="lastName"
+                    name="firstName"
                     type="text"
                     :rules="[rules.required]"
                   />

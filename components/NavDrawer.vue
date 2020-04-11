@@ -43,6 +43,16 @@
             </v-list-item-action>
           </v-list-item>
         </nuxt-link>
+
+        <nuxt-link to="/mypage/members/new-upload" class="left-nav-a">
+          <v-list-item link>
+            <v-list-item-icon />
+            <v-list-item-title>一括登録</v-list-item-title>
+            <v-list-item-action>
+              <v-icon>mdi-account-plus</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+        </nuxt-link>
             
           
         </v-list-group>

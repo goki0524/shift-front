@@ -26,7 +26,7 @@
                 <v-row>
                   <v-col cols="6">
                     <v-text-field
-                      v-model="firstName"
+                      v-model="lastName"
                       :rules="[rules.required]"
                       placeholder="姓"
                       required
@@ -34,7 +34,7 @@
                   </v-col>
                   <v-col cols="6">
                     <v-text-field
-                      v-model="lastName"
+                      v-model="firstName"
                       :rules="[rules.required]"
                       placeholder="名"
                       required

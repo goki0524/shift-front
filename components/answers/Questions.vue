@@ -143,7 +143,7 @@
   import querystring from 'querystring'
   import { mapGetters } from 'vuex'
   import QuestionItems from '~/components/answers/QuestionItems.vue'
-  const API_URL = 'http://127.0.0.1:3333/api/v1/answers/engagements'
+  const API_URL = `${process.env.apiUrl}/api/v1/answers/engagements`
 
   export default {
     components: {

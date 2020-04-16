@@ -5,7 +5,7 @@ export default async function ({ store, redirect, $axios }) {
   const accessToken = store.getters['auth/accessToken'] 
   if (accessToken && Object.keys(accessToken).length) {  
     const token = accessToken.token
-    const API_URL = 'http://127.0.0.1:3333/api/v1/auth/check_token'
+    const API_URL = `${process.env.apiUrl}/api/v1/auth/check_token`
     const response = await $axios
     .$get(API_URL, {
       headers: {

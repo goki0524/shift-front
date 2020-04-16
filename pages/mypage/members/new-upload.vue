@@ -92,8 +92,7 @@
 </style>
 
 <script>
-  // import { mapGetters } from 'vuex'
-  const API_URL = 'http://127.0.0.1:3333/api/v1/company/members/xlsx-upload'
+  const API_URL = `${process.env.apiUrl}/api/v1/company/members/xlsx-upload`
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'
 

@@ -73,7 +73,7 @@
 <script>
   import querystring from 'querystring'
   const Cookie = process.client ? require('js-cookie') : undefined
-  const API_URL = 'http://127.0.0.1:3333/api/v1/auth/login'
+  const API_URL = `${process.env.apiUrl}/api/v1/auth/login`
 
   export default {
     middleware: 'notAuthenticated',
@@ -97,7 +97,6 @@
     },
     methods: {
       async login () {
-
         const data = {
           email: this.email,
           password: this.password

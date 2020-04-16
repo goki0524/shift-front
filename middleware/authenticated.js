@@ -8,7 +8,7 @@ export default async function ({ store, redirect, $axios }) {
   } else {
     // アクセストークンがあり、無効なアクセストークンなら,ログインページへ
     const accessToken = store.getters['auth/accessToken']
-    const API_URL = 'http://127.0.0.1:3333/api/v1/auth/check_token'
+    const API_URL = `${process.env.apiUrl}/api/v1/auth/check_token`
     const token = accessToken.token
     if (accessToken && Object.keys(accessToken).length) {
       const response = await $axios

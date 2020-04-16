@@ -54,7 +54,7 @@
 <script>
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'
-  const API_URL = 'http://127.0.0.1:3333/api/v1/deliveries'
+  const API_URL = `${process.env.apiUrl}/api/v1/deliveries`
 
   export default {
     middleware: 'authenticated',

@@ -5,7 +5,8 @@
   "author": "Goki Sakaguchi <goki0524@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "HOST=0.0.0.0 PORT=3000 nuxt",
+    "dev-local": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",

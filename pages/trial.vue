@@ -190,7 +190,7 @@
 
 <script>
   import querystring from 'querystring'
-  const API_URL = 'http://127.0.0.1:3333/api/v1/trial'
+  const API_URL = `${process.env.apiUrl}/api/v1/trial`
 
   export default {
     props: {

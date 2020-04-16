@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+require('dotenv').config()
 
 export default {
   mode: 'universal',
@@ -87,5 +88,13 @@ export default {
     */
     extend (config, ctx) {
     }
+  },
+  buildModules: [
+    // Simple usage
+    '@nuxtjs/dotenv'
+  ],
+  env: {
+    baseUrl: process.env.BASE_URL || 'http://localhost:3000',
+    apiUrl: process.env.API_URL || 'http://localhost:3333'
   }
 }

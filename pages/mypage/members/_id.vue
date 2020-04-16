@@ -229,7 +229,7 @@
 </style>
 
 <script>
-  const API_URL = 'http://127.0.0.1:3333/api/v1/company/members'
+  const API_URL = `${process.env.apiUrl}/api/v1/company/members`
   import querystring from 'querystring'
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'

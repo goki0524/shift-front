@@ -211,8 +211,8 @@
 
 
 <script>
-  const API_URL_GROUPS = 'http://127.0.0.1:3333/api/v1/company/groups'
-  const API_URL_MEMBERS_GROUPS = 'http://127.0.0.1:3333/api/v1/members_groups'
+  const API_URL_GROUPS = `${process.env.apiUrl}/api/v1/company/groups`
+  const API_URL_MEMBERS_GROUPS = `${process.env.apiUrl}/api/v1/members_groups`
 
   import querystring from 'querystring'
   import NavDrawer from '~/components/NavDrawer.vue'

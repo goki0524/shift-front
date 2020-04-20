@@ -19,6 +19,9 @@ https://git-scm.com/downloads
 $ node -v
 v12.13.1
 
+$ touch .env
+$ cp .env.example .env
+
 $ yarn 
 
 $ yarn dev

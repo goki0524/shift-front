@@ -12,7 +12,20 @@ https://git-scm.com/downloads
 
 ## Build Setup
 
-### development
+### development for local
+
+``` bash
+
+$ node -v
+v12.13.1
+
+$ yarn 
+
+$ yarn dev
+
+```
+
+### development for docker
 
 ``` bash
 # build docker image

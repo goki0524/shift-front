@@ -17,6 +17,7 @@
        </v-row>
     </div>
     <div v-else>
+      <!-- TODO: Questionの個数分, QuestionItemsを出力する -->
       <v-stepper v-model="stepper">
         <v-stepper-content step="1" class="mb-10 stepper">
           <QuestionItems/>
@@ -103,18 +104,6 @@
           <QuestionItems/>
         </v-stepper-content>
         <v-stepper-content step="29" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="30" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="31" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="32" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="33" class="mb-10 stepper">
           <v-row justify="center">
             <h3 class="text">アンケートを送信して<br/>終了してください。</h3>
           </v-row>
@@ -169,45 +158,20 @@
       start() {
         this.isStart = true
       },
+      getPostData() {
+        let postData = {
+          tag: this.tag
+        }
+        this.questions.map((question, index) => {
+          postData[question.id] = this.answersArr[index]
+        })
+        return postData
+      },
       async post() {
         if (!this.tag || this.answersArr.length !== this.questions.length) {
           return
         }
-        const data = {
-          tag: this.tag,
-          a1: this.answersArr[0],
-          a2: this.answersArr[1],
-          a3: this.answersArr[2],
-          a4: this.answersArr[3],
-          a5: this.answersArr[4],
-          a6: this.answersArr[5],
-          a7: this.answersArr[6],
-          a8: this.answersArr[7],
-          a9: this.answersArr[8],
-          a10: this.answersArr[9],
-          a11: this.answersArr[10],
-          a12: this.answersArr[11],
-          a13: this.answersArr[12],
-          a14: this.answersArr[13],
-          a15: this.answersArr[14],
-          a16: this.answersArr[15],
-          a17: this.answersArr[16],
-          a18: this.answersArr[17],
-          a19: this.answersArr[18],
-          a20: this.answersArr[19],
-          a21: this.answersArr[20],
-          a22: this.answersArr[21],
-          a23: this.answersArr[22],
-          a24: this.answersArr[23],
-          a25: this.answersArr[24],
-          a26: this.answersArr[25],
-          a27: this.answersArr[26],
-          a28: this.answersArr[27],
-          a29: this.answersArr[28],
-          a30: this.answersArr[29],
-          a31: this.answersArr[30],
-          a32: this.answersArr[31]
-        }
+        const data = this.getPostData()
         this.isLoading = true
         const response = await this.$axios
           .$post(API_URL, querystring.stringify({ ...data }))

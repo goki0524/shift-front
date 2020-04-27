@@ -44,12 +44,6 @@
         <v-icon>mdi-source-commit-start-next-local</v-icon>
       </v-btn>
       <v-btn class="ma-1" outlined small fab color="teal" @click="next(5)">
-        <v-icon>mdi-source-commit-start-next-local</v-icon>
-      </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next(6)">
-        <v-icon>mdi-source-commit-start-next-local</v-icon>
-      </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next(7)">
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
     </v-row>

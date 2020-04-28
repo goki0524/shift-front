@@ -13,33 +13,77 @@
         </div>
 
         <v-row justify="center">
-          <v-col cols="12" sm="6">
+          <v-col cols="11" md="3">
             <v-card>
-              <doughnut-chart :chart-data="chartData" :options="chartOptions"/>
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-card>
-              <bar-chart :chart-data="chartData" :options="chartOptions"/>
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-card>
-              <horizontal-bar-chart :chart-data="chartData" :options="chartOptions"/>
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-card>
-              <line-chart :chart-data="chartData" :options="chartOptions"/>
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-card>
-              <pie-chart :chart-data="chartData" :options="chartOptions"/>
+              <v-card-title>スコア</v-card-title>
             </v-card>
           </v-col>
 
+          <v-col cols="11" md="8">
+            <v-card>
+              <v-card-title>スコア推移</v-card-title>
+              <line-chart :chart-data="chartData" :options="chartOptions"/>
+            </v-card>
+          </v-col>
         </v-row>
+
+        <v-row justify="center">
+          <v-col cols="11" sm="11">
+            <v-card>
+              <v-card-title>グループごとスコア</v-card-title>
+              <bar-chart :chart-data="latestScoreData" :options="chartOptions"/>
+            </v-card>
+          </v-col>
+        </v-row>
+
+        <v-row justify="center">
+          <v-col cols="11" md="4">
+            <v-card>
+              <v-card-title>特性値割合</v-card-title>
+              <radar-chart :chart-data="chartData" :options="chartOptions"/>
+            </v-card>
+          </v-col>
+
+          <v-col cols="11" md="7">
+            <v-card>
+              <v-card-title>特性値推移</v-card-title>
+              <bar-chart :chart-data="chartData" :options="chartOptions"/>
+            </v-card>
+          </v-col>
+        </v-row>
+
+        <v-row justify="center">
+          <v-col cols="11" md="4">
+            <v-card>
+              <v-card-title>症状出現時間割合</v-card-title>
+              <radar-chart :chart-data="chartData" :options="chartOptions"/>
+            </v-card>
+          </v-col>
+
+          <v-col cols="11" md="7">
+            <v-card>
+              <v-card-title>症状出現時間推移</v-card-title>
+              <bar-chart :chart-data="chartData" :options="chartOptions"/>
+            </v-card>
+          </v-col>
+        </v-row>
+
+        <v-row justify="center">
+          <v-col cols="11" md="4">
+            <v-card>
+              <v-card-title>症状出現部位割合</v-card-title>
+              <radar-chart :chart-data="chartData" :options="chartOptions"/>
+            </v-card>
+          </v-col>
+
+          <v-col cols="11" md="7">
+            <v-card>
+              <v-card-title>症状出現部位推移</v-card-title>
+              <bar-chart :chart-data="chartData" :options="chartOptions"/>
+            </v-card>
+          </v-col>
+        </v-row>
+  
 
 
       </v-container>
@@ -75,12 +119,15 @@
         drawer: true,
         chartDataValues: [],
         chartColors: [
-          colors.red.lighten1,
-          colors.blue.lighten1,
-          colors.yellow.lighten1,
-          colors.green.lighten1,
+          colors.red.lighten2,
+          colors.blue.lighten2,
+          colors.yellow.lighten2,
+          colors.green.lighten2,
+          colors.orange.lighten2,
+          colors.purple.lighten2,
         ],
-        chartLabels: ['red', 'blue', 'yellow', 'green'],
+        chartLabels: ['疲労症状	', '動作時症状 上半身', '動作時症状 下半身', '姿勢保持障害', '内部障害', 'ボディスタイル'],
+        latestScoreLabels: ['開発部', '経理部', '営業部'],
         chartOptions: {
           maintainAspectRatio: false,
           animation: {
@@ -100,6 +147,17 @@
             },
           ],
           labels: this.chartLabels,
+        }
+      },
+      latestScoreData() {
+        return {
+          datasets: [
+            {
+              data: this.chartDataValues,
+              backgroundColor: this.chartColors,
+            },
+          ],
+          labels: this.latestScoreLabels,
         }
       },
     },

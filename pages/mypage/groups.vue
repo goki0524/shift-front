@@ -211,12 +211,12 @@
 
 
 <script>
-  const API_URL_GROUPS = `${process.env.apiUrl}/api/v1/company/groups`
-  const API_URL_MEMBERS_GROUPS = `${process.env.apiUrl}/api/v1/members_groups`
-
   import querystring from 'querystring'
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'
+
+  const API_URL_GROUPS = `${process.env.apiUrl}/api/v1/company/groups`
+  const API_URL_MEMBERS_GROUPS = `${process.env.apiUrl}/api/v1/members_groups`
   
   // TODO: Refactoring
   export default {

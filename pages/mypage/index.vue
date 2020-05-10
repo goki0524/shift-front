@@ -33,8 +33,8 @@
         <v-row justify="center">
           <v-col cols="11" sm="11">
             <v-card>
-              <v-card-title>グループごとスコア</v-card-title>
-              <bar-chart :chart-data="latestScoreData" :options="chartOptions"/>
+              <v-card-title>グループごと最新スコア</v-card-title>
+              <bar-chart :chart-data="latestScoreChartData" :options="latestScoreChartOptions"/>
             </v-card>
           </v-col>
         </v-row>
@@ -164,11 +164,30 @@
             }]
           }
         },
+        //グループごとスコア
+        latestScoreChartOptions: {
+          maintainAspectRatio: false,
+          animation: {
+            duration: 1500,
+            easing: 'easeInOutCubic',
+          },
+          scales: {
+            yAxes: [{
+              id: 'スコア', // 軸ID
+              ticks: {
+                beginAtZero: true
+              }
+            }],
+            xAxes: [{
+              id: 'グループ', // 軸ID
+            }]
+          }
+        },
       }
     },
     computed: {
       chartData() {
-        return {
+         const data = {
           datasets: [
             {
               data: this.chartDataValues,
@@ -177,16 +196,40 @@
           ],
           labels: this.chartLabels,
         }
+        return data
+      },
+      latestScoreChartData() {
+        const groupsLatestPhysicalScores = this.$store.getters['dashboard/groupsLatestPhysicalScores']
+        let datasets = []
+        let labels = []
+        let data = []
+        let dataObj = {
+          label: '',
+          data: [],
+          backgroundColor: '',
+          xAxisID: 'グループ',
+          yAxisID: 'スコア'
+        }
+        if (groupsLatestPhysicalScores.length) {
+          for (let i = 0; i < groupsLatestPhysicalScores.length; i++) {
+            let newObj = Object.assign({}, dataObj)
+            newObj.label = groupsLatestPhysicalScores[i].groupName
+            newObj.data = [groupsLatestPhysicalScores[i].score]
+            newObj.backgroundColor = this.chartColors[i]
+            datasets.push(newObj)
+          }
+        }
+        return {
+          datasets: datasets,
+          labels: ['スコア']
+        }
       },
       companyLatestPhysicalScore() {
         const companyLatestPhysicalScore = this.$store.getters['dashboard/companyLatestPhysicalScore']
         return companyLatestPhysicalScore
       },
-      scoreTransitions() {
-        const scoreTransitions = this.$store.getters['dashboard/scoreTransitions']
-        return scoreTransitions
-      },
       scoreTransitonChartData() {
+        const scoreTransitions = this.$store.getters['dashboard/scoreTransitions']
         let datasets = []
         let dataObj = {
           label: '',
@@ -217,17 +260,17 @@
           spanGaps: true, // データがない点にも線を引く
           steppedLine: false, // 階段グラフ
         }
-        if (this.scoreTransitions.companyScores.length) {
+        if (scoreTransitions.companyScores.length) {
           let newObj = Object.assign({}, dataObj)
           newObj.label = '全体'
-          newObj.data = this.scoreTransitions.companyScores
+          newObj.data = scoreTransitions.companyScores
           datasets.push(newObj)
         }
-        if (this.scoreTransitions.groups.length) {
-          for(let i = 0; i < this.scoreTransitions.groups.length; i++) {
+        if (scoreTransitions.groups.length) {
+          for (let i = 0; i < scoreTransitions.groups.length; i++) {
             let newObj = Object.assign({}, dataObj)
-            newObj.label = this.scoreTransitions.groups[i].groupName
-            newObj.data = this.scoreTransitions.groups[i].scores
+            newObj.label = scoreTransitions.groups[i].groupName
+            newObj.data = scoreTransitions.groups[i].scores
             newObj.borderColor = this.chartColors[i]
             newObj.backgroundColor = this.chartColors[i]
             newObj.pointBackgroundColor = this.chartColors[i]
@@ -239,7 +282,7 @@
         }
         return {
           datasets: datasets,
-          labels: this.scoreTransitions.scoreTransitonChartLabels,
+          labels: scoreTransitions.scoreTransitonChartLabels,
         }
       },
     },
@@ -252,7 +295,7 @@
         for (var i = 0; i < this.chartLabels.length; i++) {
           data.push(Math.floor(Math.random() * 100));
         }
-        this.chartDataValues = data;
+        this.chartDataValues = data
       },
     },
     async asyncData({ $axios, query, store }) {

@@ -17,93 +17,14 @@
        </v-row>
     </div>
     <div v-else>
-      <!-- TODO: Questionの個数分, QuestionItemsを出力する -->
       <v-stepper v-model="stepper">
-        <v-stepper-content step="1" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="2" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="3" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="4" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="5" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="6" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="7" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="8" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="9" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="10" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="11" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="12" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="13" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="14" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="15" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="16" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="17" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="18" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="19" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="20" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="21" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="22" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="23" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="24" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="25" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="26" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="27" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="28" class="mb-10 stepper">
-          <QuestionItems/>
-        </v-stepper-content>
-        <v-stepper-content step="29" class="mb-10 stepper">
+        <StepperContent
+          v-for="n in this.questionCount"
+          v-bind:key="n"
+          :step="n"
+        >
+        </StepperContent>
+        <v-stepper-content :step="this.questionCount+1" class="mb-10 stepper"> 
           <v-row justify="center">
             <h3 class="text">アンケートを送信して<br/>終了してください。</h3>
           </v-row>
@@ -131,12 +52,12 @@
 <script>
   import querystring from 'querystring'
   import { mapGetters } from 'vuex'
-  import QuestionItems from '~/components/answers/QuestionItems.vue'
+  import StepperContent from '~/components/answers/StepperContent.vue'
   const API_URL = `${process.env.apiUrl}/api/v1/answers/engagements`
 
   export default {
     components: {
-      QuestionItems,
+      StepperContent,
     },
     data() {
       return {
@@ -152,7 +73,8 @@
         tag: 'answers/tag',
         questions: 'answers/questions',
         answersArr: 'answers/answersArr',
-      })
+        questionCount: 'answers/questionCount'
+      }),
     },
     methods: {
       start() {

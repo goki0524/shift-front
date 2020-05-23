@@ -31,6 +31,13 @@ export default {
     questions (state) {
       return state.questions
     },
+    questionCount (state) {
+      if (state.questions.length) {
+        return state.questions.length
+      } else {
+        return 0
+      }
+    },
     answersArr (state) {
       return state.answersArr
     },

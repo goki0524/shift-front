@@ -9,52 +9,46 @@
       </v-row>
     </div>
     <v-row justify="center" class="mt-5">
-      <h2>{{stepper}}/{{getQuestionCount}}</h2>
+      <h2>{{ stepper }}/{{ questionCount }}</h2>
     </v-row>
     <v-card-title>
       <v-row justify="center">
         <div class="question-title">
-          {{getDefaultQuestions(stepper-1)}}
+          {{ defaultQuestionContent(questionNumber) }}
         </div>
       </v-row>
     </v-card-title>
-      
-    <div class="word-row">
+
+    <div v-if="answerWordCount(questionNumber) == 6" class="answer-btn-group">
       <v-row justify="center">
-        <v-col cols="6" class="word">
-          <v-icon>mdi-chevron-double-left</v-icon>{{getAnswerLowestWord(stepper-1)}}
-        </v-col>
-        <v-col cols="6" class="word">
-          {{getAnswerBestWord(stepper-1)}} <v-icon>mdi-chevron-double-right</v-icon>
-        </v-col>
+        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(1)">
+          {{ answerWord(questionNumber, 1) }}
+        </v-btn>
+        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(2)">
+          {{ answerWord(questionNumber, 2) }}
+        </v-btn>
+        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(3)">
+          {{ answerWord(questionNumber, 3) }}
+        </v-btn>
+        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(4)">
+          {{ answerWord(questionNumber, 4) }}
+        </v-btn>
+        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(5)">
+          {{ answerWord(questionNumber, 5) }}
+        </v-btn>
+        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(6)">
+          {{ answerWord(questionNumber, 6) }}
+        </v-btn>
       </v-row>
     </div>
-
-    <v-row justify="center">
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next(1)">
-        <v-icon>mdi-chevron-left</v-icon>
-      </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next(2)">
-        <v-icon>mdi-source-commit-start-next-local</v-icon>
-      </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next(3)">
-        <v-icon>mdi-source-commit-start-next-local</v-icon>
-      </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next(4)">
-        <v-icon>mdi-source-commit-start-next-local</v-icon>
-      </v-btn>
-      <v-btn class="ma-1" outlined small fab color="teal" @click="next(5)">
-        <v-icon>mdi-chevron-right</v-icon>
-      </v-btn>
-    </v-row>
-
   </div>
 </template>
 
 <style scoped>
 .question-title {
-  margin-top: 10px; 
-  font-size: 20px;
+  margin-top: 10px;
+  padding: 0 10px 0 10px;
+  font-size: 18px;
 }
 .word-row {
   margin-top: 10px;
@@ -64,21 +58,36 @@
   text-align: center;
   font-weight: bold;
 }
+.answer-btn-group {
+  margin-top: 20px;
+}
+.answer-btn {
+  width: 200px;
+  height: 50px;
+}
 </style>
 
 <script>
   import { mapGetters } from 'vuex'
   export default {
+    data () {
+      return {
+        value: 0,
+      }
+    },
     computed: {
-      getQuestionCount() {
+      ...mapGetters({
+        stepper: 'answers/stepper',
+        questions: 'answers/questions',
+      }),
+      questionCount() {
         if (this.questions && this.questions.length > 0) {
           return this.questions.length
         }
       },
-      ...mapGetters({
-        stepper: 'answers/stepper',
-        questions: 'answers/questions',
-      })
+      questionNumber() {
+        return this.stepper-1
+      }
     },
     methods: {
       next(num) {
@@ -89,26 +98,27 @@
         this.$store.commit('answers/deleteAnswersArr')
         this.$store.commit('answers/setStepper', this.stepper-1)
       },
-      getDefaultQuestions(index) {
+      defaultQuestionContent(index) {
         if (this.questions && this.questions.length > 0 && this.stepper <= this.questions.length) {
           if (this.questions[index].hasOwnProperty('content')) {
             return this.questions[index].content
           }
         }
       },
-      getAnswerBestWord(index) {
+      answerWord(questionIndex, answerWordIndex) {
         if (this.questions && this.questions.length > 0 && this.stepper <= this.questions.length) {
-          if (this.questions[index].hasOwnProperty('answerBestWord')) {
-            return this.questions[index].answerBestWord
+          if (this.questions[questionIndex].hasOwnProperty('answerWordCount')) {
+            const answerWords = this.questions[questionIndex].answerWords.split('|')
+            return answerWords[answerWordIndex-1]
           }
         }
       },
-      getAnswerLowestWord(index) {
-         if (this.questions && this.questions.length > 0 && this.stepper <= this.questions.length) {
-           if (this.questions[index].hasOwnProperty('answerLowestWord')) {
-             return this.questions[index].answerLowestWord
-           }
-         }
+      answerWordCount(index) {
+        if (this.questions && this.questions.length > 0 && this.stepper <= this.questions.length) {
+          if (this.questions[index].hasOwnProperty('answerWordCount')) {
+            return this.questions[index].answerWordCount
+          }
+        }
       }
     }
   }

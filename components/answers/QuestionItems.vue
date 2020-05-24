@@ -20,25 +20,39 @@
     </v-card-title>
 
     <div v-if="answerWordCount(questionNumber) == 6" class="answer-btn-group">
-      <v-row justify="center">
-        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(1)">
-          {{ answerWord(questionNumber, 1) }}
-        </v-btn>
-        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(2)">
-          {{ answerWord(questionNumber, 2) }}
-        </v-btn>
-        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(3)">
-          {{ answerWord(questionNumber, 3) }}
-        </v-btn>
-        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(4)">
-          {{ answerWord(questionNumber, 4) }}
-        </v-btn>
-        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(5)">
-          {{ answerWord(questionNumber, 5) }}
-        </v-btn>
-        <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(6)">
-          {{ answerWord(questionNumber, 6) }}
-        </v-btn>
+      <v-row>
+        <v-col cols="12">
+          <v-row justify="center">
+            <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(1)">
+              {{ answerWord(questionNumber, 1) }}
+            </v-btn>
+          </v-row>
+          <v-row justify="center">
+             <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(2)">
+              {{ answerWord(questionNumber, 2) }}
+            </v-btn>
+          </v-row>
+          <v-row justify="center">
+            <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(3)">
+              {{ answerWord(questionNumber, 3) }}
+            </v-btn>
+          </v-row>
+          <v-row justify="center">
+            <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(4)">
+              {{ answerWord(questionNumber, 4) }}
+            </v-btn>
+          </v-row>
+          <v-row justify="center">
+            <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(5)">
+              {{ answerWord(questionNumber, 5) }}
+            </v-btn>
+          </v-row>
+          <v-row justify="center">
+            <v-btn class="ma-2 answer-btn" outlined color="teal" @click="next(6)">
+              {{ answerWord(questionNumber, 6) }}
+            </v-btn>
+          </v-row>
+        </v-col>
       </v-row>
     </div>
   </div>

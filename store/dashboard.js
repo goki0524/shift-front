@@ -3,6 +3,7 @@ export default {
     companyLatestPhysicalScore: {},
     scoreTransitions: {},
     groupsLatestPhysicalScores: [],
+    characteristicValueData: {},
   }),
 
   mutations: {
@@ -14,7 +15,10 @@ export default {
     },
     setGroupsLatestPhysicalScores (state, groupsLatestPhysicalScores) {
       state.groupsLatestPhysicalScores = groupsLatestPhysicalScores
-    }
+    },
+    setCharacteristicValueData (state, characteristicValueData) {
+      state.characteristicValueData = characteristicValueData
+    },
   },
 
   getters: {
@@ -26,7 +30,10 @@ export default {
     },
     groupsLatestPhysicalScores (state) {
       return state.groupsLatestPhysicalScores
-    }
+    },
+    characteristicValueData (state) {
+      return state.characteristicValueData
+    },
 
   },
 }

@@ -5,20 +5,17 @@
     />
     <v-content>
       <v-container
+        v-if="!error"
         class="fill-height"
         fluid
       >
-        <div class="text-xs-center mt-2">
-          <v-btn dark color="indigo" @click="randomizeData()">Randomize data</v-btn>
-        </div>
-
         <v-row justify="center">
           <v-col cols="11" md="3">
             <v-card>
               <v-card-title>スコア</v-card-title>
-              <div class="score">{{this.companyLatestPhysicalScore.score}}/125</div>
+              <div class="score">{{companyLatestPhysicalScore.score}}/125</div>
               <v-card-subtitle>最新サーベイ配信日:
-              {{this.companyLatestPhysicalScore.deliveryAt}}</v-card-subtitle>
+              {{companyLatestPhysicalScore.deliveryAt}}</v-card-subtitle>
             </v-card>
           </v-col>
 
@@ -34,7 +31,7 @@
           <v-col cols="11" sm="11">
             <v-card>
               <v-card-title>グループごと最新スコア</v-card-title>
-              <bar-chart :chart-data="latestScoreChartData" :options="latestScoreChartOptions"/>
+              <bar-chart :chart-data="groupsLatestScoreChartData" :options="groupsLatestScoreChartOptions"/>
             </v-card>
           </v-col>
         </v-row>
@@ -43,14 +40,14 @@
           <v-col cols="11" md="4">
             <v-card>
               <v-card-title>特性値割合</v-card-title>
-              <radar-chart :chart-data="chartData" :options="chartOptions"/>
+              <radar-chart :chart-data="characteristicValueRadarChartData" :options="categoryRadarCartOptions"/>
             </v-card>
           </v-col>
 
           <v-col cols="11" md="7">
             <v-card>
               <v-card-title>特性値推移</v-card-title>
-              <bar-chart :chart-data="chartData" :options="chartOptions"/>
+              <bar-chart :chart-data="characteristicValueBarChartData" :options="categoryBarChartOptions"/>
             </v-card>
           </v-col>
         </v-row>
@@ -59,14 +56,14 @@
           <v-col cols="11" md="4">
             <v-card>
               <v-card-title>症状出現時間割合</v-card-title>
-              <radar-chart :chart-data="chartData" :options="chartOptions"/>
+              <radar-chart :chart-data="chartData" :options="categoryRadarCartOptions"/>
             </v-card>
           </v-col>
 
           <v-col cols="11" md="7">
             <v-card>
               <v-card-title>症状出現時間推移</v-card-title>
-              <bar-chart :chart-data="chartData" :options="chartOptions"/>
+              <bar-chart :chart-data="categoryBarChartData" :options="categoryBarChartOptions"/>
             </v-card>
           </v-col>
         </v-row>
@@ -75,20 +72,27 @@
           <v-col cols="11" md="4">
             <v-card>
               <v-card-title>症状出現部位割合</v-card-title>
-              <radar-chart :chart-data="chartData" :options="chartOptions"/>
+              <radar-chart :chart-data="chartData" :options="categoryRadarCartOptions"/>
             </v-card>
           </v-col>
 
           <v-col cols="11" md="7">
             <v-card>
               <v-card-title>症状出現部位推移</v-card-title>
-              <bar-chart :chart-data="chartData" :options="chartOptions"/>
+              <bar-chart :chart-data="categoryBarChartData" :options="categoryBarChartOptions"/>
             </v-card>
           </v-col>
         </v-row>
-  
+      </v-container>
 
-
+      <v-container
+        v-else
+        class="fill-height"
+        fluid
+      >
+        <v-row justify="center">
+          <h3>データがありません。</h3>
+        </v-row>
       </v-container>
     </v-content>
   <Footer />
@@ -102,7 +106,7 @@
 }
 .score {
   color: darkcyan;
-  font-size: 76px;
+  font-size: 64px;
   text-align: center;
 }
 </style>
@@ -112,6 +116,7 @@
   import NavDrawer from '~/components/NavDrawer.vue'
   import Footer from '~/components/Footer.vue'
   import colors from 'vuetify/es5/util/colors'
+  import { mapGetters } from 'vuex'
 
   const API_URL_DASHBOARD =  `${process.env.apiUrl}/api/v1/dashboard`
 
@@ -127,6 +132,7 @@
     data() {
       return {
         drawer: true,
+        error: false,
         chartDataValues: [],
         chartColors: [
           colors.red.lighten2,
@@ -137,13 +143,27 @@
           colors.purple.lighten2,
         ],
         chartLabels: ['疲労症状	', '動作時症状 上半身', '動作時症状 下半身', '姿勢保持障害', '内部障害', 'ボディスタイル'],
-        latestScoreLabels: ['開発部', '経理部', '営業部'],
-        chartOptions: {
+        categoryRadarCartOptions: {
           maintainAspectRatio: false,
           animation: {
             duration: 1500,
             easing: 'easeInOutCubic',
           },
+        },
+        categoryBarChartOptions: {
+          maintainAspectRatio: false,
+          animation: {
+            duration: 1500,
+            easing: 'easeInOutCubic',
+          },
+          scales: {
+            xAxes: [{
+              stacked: true
+            }],
+            yAxes: [{
+              stacked: true
+            }]
+          }
         },
         //スコアの推移
         scoreTransitonChartOptions: {
@@ -165,7 +185,7 @@
           }
         },
         //グループごとスコア
-        latestScoreChartOptions: {
+        groupsLatestScoreChartOptions: {
           maintainAspectRatio: false,
           animation: {
             duration: 1500,
@@ -173,42 +193,40 @@
           },
           scales: {
             yAxes: [{
-              id: 'スコア', // 軸ID
               ticks: {
                 beginAtZero: true
               }
-            }],
-            xAxes: [{
-              id: 'グループ', // 軸ID
             }]
           }
         },
       }
     },
     computed: {
+      ...mapGetters({
+        groupsLatestPhysicalScores: 'dashboard/groupsLatestPhysicalScores',
+        companyLatestPhysicalScore: 'dashboard/companyLatestPhysicalScore',
+        characteristicValueData: 'dashboard/characteristicValueData',
+      }),
       chartData() {
          const data = {
           datasets: [
             {
               data: this.chartDataValues,
               backgroundColor: this.chartColors,
+              fill: '', // 塗りつぶしモード
             },
           ],
           labels: this.chartLabels,
         }
         return data
       },
-      latestScoreChartData() {
-        const groupsLatestPhysicalScores = this.$store.getters['dashboard/groupsLatestPhysicalScores']
+      groupsLatestScoreChartData() {
+        const groupsLatestPhysicalScores = this.groupsLatestPhysicalScores
         let datasets = []
-        let labels = []
-        let data = []
         let dataObj = {
           label: '',
           data: [],
           backgroundColor: '',
-          xAxisID: 'グループ',
-          yAxisID: 'スコア'
         }
         if (groupsLatestPhysicalScores.length) {
           for (let i = 0; i < groupsLatestPhysicalScores.length; i++) {
@@ -224,9 +242,31 @@
           labels: ['スコア']
         }
       },
-      companyLatestPhysicalScore() {
-        const companyLatestPhysicalScore = this.$store.getters['dashboard/companyLatestPhysicalScore']
-        return companyLatestPhysicalScore
+      characteristicValueRadarChartData() {
+        const radarChartData = this.characteristicValueData.radarChartData
+        const categoryNames = this.characteristicValueData.categoryNames
+
+        const data = {
+          datasets: [
+            {
+              data: radarChartData,
+              backgroundColor: 'darkcyan',
+              fill: '', // 塗りつぶしモード
+              label: '特性値割合',
+            },
+          ],
+          labels: categoryNames,
+        }
+        return data
+      },
+      characteristicValueBarChartData() {
+        const barChartData = this.characteristicValueData.barChartData
+        const datasets = barChartData.datasets
+        const labels = barChartData.labels
+        return {
+          datasets: datasets,
+          labels: labels
+        }
       },
       scoreTransitonChartData() {
         const scoreTransitions = this.$store.getters['dashboard/scoreTransitions']
@@ -287,13 +327,13 @@
       },
     },
     mounted: function() {
-      this.randomizeData();
+      this.randomizeData()
     },
     methods: {
       randomizeData: function() {
-        var data = [];
+        var data = []
         for (var i = 0; i < this.chartLabels.length; i++) {
-          data.push(Math.floor(Math.random() * 100));
+          data.push(Math.floor(Math.random() * 100))
         }
         this.chartDataValues = data
       },
@@ -311,11 +351,18 @@
         console.log('response error: ', error)
         return false
       })
-      store.commit('dashboard/setCompanyLatestPhysicalScore', response.companyLatestPhysicalScore)
-      store.commit('dashboard/setScoreTransitions', response.scoreTransitions)
-      store.commit('dashboard/setGroupsLatestPhysicalScores', response.groupsLatestPhysicalScores)
+      const data = response.data
+      if (!data) {
+        return {
+          error: true
+        }
+      }
+      store.commit('dashboard/setCompanyLatestPhysicalScore', data.companyLatestPhysicalScore)
+      store.commit('dashboard/setScoreTransitions', data.scoreTransitions)
+      store.commit('dashboard/setGroupsLatestPhysicalScores', data.groupsLatestPhysicalScores)
+      store.commit('dashboard/setCharacteristicValueData', data.characteristicValueData)
       return {
-        
+        error: false
       }
     }
   }
